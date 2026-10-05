@@ -103,20 +103,6 @@ reg_t kLsciFileSizeHigh(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv);
 
 reg_t kTsn(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnGetStatus(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnGetSharedData(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnSetSharedData(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnConnect(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnSend(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnReserved(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnDisconnect(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnPoll(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnSetNextProgram(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnGetPreviousProgram(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnIsTransmitIdle(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnSwitchHost(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnFlush(EngineState *s, int argc, reg_t *argv);
-reg_t kTsnGetLineRate(EngineState *s, int argc, reg_t *argv);
 #endif
 
 } // End of namespace Sci

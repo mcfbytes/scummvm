@@ -42,6 +42,28 @@ enum TsnConnectResult {
 	kTsnConnectNoCarrier = 10
 };
 
+// The executive's exports; a TSN sub-op is the number of the export it calls
+enum TsnExport {
+	kTsnExportGetStatus = 0,
+	kTsnExportGetSharedData = 1,
+	kTsnExportSetSharedData = 2,
+	kTsnExportConnect = 3,
+	kTsnExportSend = 4,
+	kTsnExportReceive = 5,
+	kTsnExportSetAckTimeout = 6,
+	kTsnExportDisconnect = 7,
+	kTsnExportPoll = 8,
+	kTsnExportSetNextProgram = 9,
+	kTsnExportService = 10,
+	kTsnExportGetPreviousProgram = 11,
+	kTsnExportIsTransmitIdle = 12,
+	kTsnExportSwitchHost = 13,
+	kTsnExportFlush = 14,
+	kTsnExportSetCallbacks = 15,
+	kTsnExportGetLineRate = 16,
+	kTsnExportCount = 17
+};
+
 enum {
 	kTsnConnectionUp = 0x80,
 	kTsnSharedDataSize = 256

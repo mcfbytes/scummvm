@@ -217,27 +217,6 @@ static const SciKernelMapSubEntry kLsciGraph_subops[] = {
 	SCI_SUBOPENTRY_TERMINATOR
 };
 
-// The sub-op number is the TSN executive's export number; four exports are not for scripts
-static const SciKernelMapSubEntry kTsn_subops[] = {
-	{ SIG_SCIALL,  0, MAP_CALL(TsnGetStatus),          "",          nullptr },
-	{ SIG_SCIALL,  1, MAP_CALL(TsnGetSharedData),      "",          nullptr },
-	{ SIG_SCIALL,  2, MAP_CALL(TsnSetSharedData),      "[r0]i",     nullptr },
-	{ SIG_SCIALL,  3, MAP_CALL(TsnConnect),            "[ro]",      nullptr },
-	{ SIG_SCIALL,  4, MAP_CALL(TsnSend),               "[ro](.*)",  nullptr },
-	{ SIG_SCIALL,  5, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
-	{ SIG_SCIALL,  6, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
-	{ SIG_SCIALL,  7, MAP_CALL(TsnDisconnect),         "",          nullptr },
-	{ SIG_SCIALL,  8, MAP_CALL(TsnPoll),               "",          nullptr },
-	{ SIG_SCIALL,  9, MAP_CALL(TsnSetNextProgram),     "[ro0]",     nullptr },
-	{ SIG_SCIALL, 10, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
-	{ SIG_SCIALL, 11, MAP_CALL(TsnGetPreviousProgram), "",          nullptr },
-	{ SIG_SCIALL, 12, MAP_CALL(TsnIsTransmitIdle),     "",          nullptr },
-	{ SIG_SCIALL, 13, MAP_CALL(TsnSwitchHost),         "[ro]",      nullptr },
-	{ SIG_SCIALL, 14, MAP_CALL(TsnFlush),              "",          nullptr },
-	{ SIG_SCIALL, 15, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
-	{ SIG_SCIALL, 16, MAP_CALL(TsnGetLineRate),        "",          nullptr },
-	SCI_SUBOPENTRY_TERMINATOR
-};
 #endif
 
 // LSCI kernels by name. Unlisted names fall back to kStub; several clash with SCI
@@ -314,7 +293,7 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ "Long", kLsciLong,                 SIG_EVERYWHERE, "io(.*)",         nullptr, nullptr },
 	{ "SID", kLsciSid,                   SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "Graph", kGraph,                   SIG_EVERYWHERE, "i(.*)",          kLsciGraph_subops, nullptr },
-	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          kTsn_subops, nullptr },
+	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 #else
 	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },
 #endif

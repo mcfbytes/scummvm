@@ -129,22 +129,16 @@ reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv) {
 	return kGetEvent(s, argc, argv);
 }
 
-reg_t kTsn(EngineState *s, int argc, reg_t *argv) {
-	if (!s)
-		return make_reg(0, getSciVersion());
-	error("not supposed to call this");
-}
-
-reg_t kTsnGetStatus(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnGetStatus(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, tsnExecutive().getStatus().toWord());
 }
 
-reg_t kTsnGetSharedData(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnGetSharedData(EngineState *s, int argc, reg_t *argv) {
 	const Common::Array<byte> block = tsnExecutive().getSharedData();
 	return block.empty() ? NULL_REG : makeLsciByteArray(s->_segMan, block);
 }
 
-reg_t kTsnSetSharedData(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnSetSharedData(EngineState *s, int argc, reg_t *argv) {
 	Common::Array<byte> block;
 	if (!argv[0].isNull() && argv[1].toUint16())
 		block = getLsciArrayBytes(s->_segMan, argv[0], argv[1].toUint16());
@@ -152,11 +146,11 @@ reg_t kTsnSetSharedData(EngineState *s, int argc, reg_t *argv) {
 	return s->r_acc;
 }
 
-reg_t kTsnConnect(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnConnect(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, tsnSession().connect(getLsciString(s->_segMan, argv[0])));
 }
 
-reg_t kTsnSend(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnSend(EngineState *s, int argc, reg_t *argv) {
 	TsnExecutive &executive = tsnExecutive();
 	const Common::String format = getLsciString(s->_segMan, argv[0]);
 	const Common::Array<byte> body = formatTsnMessage(s->_segMan, format, argc - 1, argv + 1);
@@ -165,48 +159,75 @@ reg_t kTsnSend(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, executive.send(body));
 }
 
-reg_t kTsnReserved(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnReserved(EngineState *s, int argc, reg_t *argv) {
 	// Binds the executive like every sub-op, then leaves the accumulator alone
 	tsnExecutive();
 	return s->r_acc;
 }
 
-reg_t kTsnDisconnect(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnDisconnect(EngineState *s, int argc, reg_t *argv) {
 	tsnSession().disconnect();
 	return s->r_acc;
 }
 
-reg_t kTsnPoll(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnPoll(EngineState *s, int argc, reg_t *argv) {
 	tsnSession().pump();
 	return s->r_acc;
 }
 
-reg_t kTsnSetNextProgram(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnSetNextProgram(EngineState *s, int argc, reg_t *argv) {
 	const Common::String name = argv[0].isNull() ? Common::String() : getLsciString(s->_segMan, argv[0]);
 	tsnExecutive().setNextProgram(name);
 	return s->r_acc;
 }
 
-reg_t kTsnGetPreviousProgram(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnGetPreviousProgram(EngineState *s, int argc, reg_t *argv) {
 	const Common::String name = tsnExecutive().getPreviousProgram();
 	return name.empty() ? NULL_REG : makeLsciString(s->_segMan, name);
 }
 
-reg_t kTsnIsTransmitIdle(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnIsTransmitIdle(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, tsnExecutive().isTransmitIdle());
 }
 
-reg_t kTsnSwitchHost(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnSwitchHost(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, tsnSession().switchHost(getLsciString(s->_segMan, argv[0])));
 }
 
-reg_t kTsnFlush(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnFlush(EngineState *s, int argc, reg_t *argv) {
 	tsnExecutive().flush();
 	return s->r_acc;
 }
 
-reg_t kTsnGetLineRate(EngineState *s, int argc, reg_t *argv) {
+static reg_t kTsnGetLineRate(EngineState *s, int argc, reg_t *argv) {
 	return make_reg(0, tsnExecutive().getLineRate());
+}
+
+// LSCITV's jump table: sub-op n calls export n, and a sub-op past the table does nothing
+static KernelFunctionCall *const s_tsnSubops[kTsnExportCount] = {
+	kTsnGetStatus,
+	kTsnGetSharedData,
+	kTsnSetSharedData,
+	kTsnConnect,
+	kTsnSend,
+	kTsnReserved,
+	kTsnReserved,
+	kTsnDisconnect,
+	kTsnPoll,
+	kTsnSetNextProgram,
+	kTsnReserved,
+	kTsnGetPreviousProgram,
+	kTsnIsTransmitIdle,
+	kTsnSwitchHost,
+	kTsnFlush,
+	kTsnReserved,
+	kTsnGetLineRate
+};
+
+reg_t kTsn(EngineState *s, int argc, reg_t *argv) {
+	const uint16 subop = argv[0].toUint16();
+	KernelFunctionCall *const call = subop < kTsnExportCount ? s_tsnSubops[subop] : kTsnReserved;
+	return call(s, argc - 1, argv + 1);
 }
 
 } // End of namespace Sci
