@@ -21,6 +21,7 @@
 
 // Console module
 
+#include "common/events.h"
 #include "common/md5.h"
 #include "sci/sci.h"
 #include "sci/console.h"
@@ -135,6 +136,8 @@ Console::Console(SciEngine *engine) : GUI::Debugger(),
 	registerCmd("set_palette",		WRAP_METHOD(Console, cmdSetPalette));
 	registerCmd("draw_pic",			WRAP_METHOD(Console, cmdDrawPic));
 	registerCmd("draw_cel",			WRAP_METHOD(Console, cmdDrawCel));
+	registerCmd("screenshot",		WRAP_METHOD(Console, cmdScreenshot));
+	registerCmd("click",			WRAP_METHOD(Console, cmdClick));
 	registerCmd("undither",           WRAP_METHOD(Console, cmdUndither));
 	registerCmd("pic_visualize",		WRAP_METHOD(Console, cmdPicVisualize));
 	registerCmd("play_video",         WRAP_METHOD(Console, cmdPlayVideo));
@@ -2098,6 +2101,37 @@ bool Console::cmdDrawPic(int argc, const char **argv) {
 	g_system->showOverlay();
 #endif
 
+	return true;
+}
+
+bool Console::cmdScreenshot(int argc, const char **argv) {
+	// The backend writes the file, in the directory given by --screenshotpath
+	g_system->updateScreen();
+	g_system->saveScreenshot();
+	return true;
+}
+
+bool Console::cmdClick(int argc, const char **argv) {
+	const bool press = argc == 3 || (argc == 4 && !strcmp(argv[3], "down"));
+	const bool release = argc == 3 || (argc == 4 && !strcmp(argv[3], "up"));
+	if (!press && !release) {
+		debugPrintf("Queues a left click at the given screen position, for when the game resumes\n");
+		debugPrintf("Usage: %s <x> <y> [down | up]\n", argv[0]);
+		return true;
+	}
+
+	Common::Event event;
+	event.mouse = Common::Point(atoi(argv[1]), atoi(argv[2]));
+	event.type = Common::EVENT_MOUSEMOVE;
+	g_system->getEventManager()->pushEvent(event);
+	if (press) {
+		event.type = Common::EVENT_LBUTTONDOWN;
+		g_system->getEventManager()->pushEvent(event);
+	}
+	if (release) {
+		event.type = Common::EVENT_LBUTTONUP;
+		g_system->getEventManager()->pushEvent(event);
+	}
 	return true;
 }
 

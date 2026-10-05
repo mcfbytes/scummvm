@@ -91,6 +91,8 @@ private:
 	// Graphics
 	bool cmdSetPalette(int argc, const char **argv);
 	bool cmdDrawPic(int argc, const char **argv);
+	bool cmdScreenshot(int argc, const char **argv);
+	bool cmdClick(int argc, const char **argv);
 	bool cmdDrawCel(int argc, const char **argv);
 	bool cmdUndither(int argc, const char **argv);
 	bool cmdPicVisualize(int argc, const char **argv);
