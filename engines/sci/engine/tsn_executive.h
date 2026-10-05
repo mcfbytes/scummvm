@@ -101,6 +101,9 @@ public:
 	virtual uint16 getLineRate() = 0;
 };
 
+// The executive that the game options select: innkeeperd at lsci_host, else offline
+TsnExecutive *makeTsnExecutive();
+
 } // End of namespace Sci
 
 #endif // SCI_ENGINE_TSN_EXECUTIVE_H

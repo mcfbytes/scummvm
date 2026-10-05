@@ -42,6 +42,7 @@ MODULE_OBJS := \
 	engine/static_selectors.o \
 	engine/tsn_envelope_parser.o \
 	engine/tsn_envelope_writer.o \
+	engine/tsn_executive.o \
 	engine/tsn_offline_executive.o \
 	engine/tsn_online_executive.o \
 	engine/tsn_session.o \
@@ -138,6 +139,11 @@ MODULE_OBJS += \
 	sound/audio32.o \
 	sound/decoders/sol.o \
 	video/robot_decoder.o
+endif
+
+ifdef USE_BASIC_NET
+MODULE_OBJS += \
+	engine/tsn_socket_transport.o
 endif
 
 # This module can be built as a plugin

@@ -43,7 +43,6 @@
 #include "sci/engine/selector.h"	// for SELECTOR
 #include "sci/engine/scriptdebug.h"
 #include "sci/engine/tts.h"
-#include "sci/engine/tsn_offline_executive.h"
 #include "sci/engine/tsn_session.h"
 #include "sci/resource/lsci_land.h"
 
@@ -352,7 +351,7 @@ Common::Error SciEngine::run() {
 	_guestAdditions = new GuestAdditions(_gamestate, _features, _kernel);
 	_eventMan = new EventManager(_resMan->detectFontExtended());
 	if (_resMan->isLsci())
-		_tsnSession = new TsnSession(new OfflineTsnExecutive());
+		_tsnSession = new TsnSession(makeTsnExecutive());
 #ifdef ENABLE_SCI32
 	if (getSciVersion() >= SCI_VERSION_2) {
 		_audio32 = new Audio32(_resMan);
