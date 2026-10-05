@@ -30,6 +30,7 @@
 #include "sci/version.h"
 #include "sci/engine/state.h"
 #include "sci/engine/kernel.h"
+#include "sci/engine/lsci_script_image.h"
 #include "sci/engine/selector.h"
 #include "sci/engine/savegame.h"
 #include "sci/engine/gc.h"
@@ -62,6 +63,7 @@
 #endif
 
 #include "common/file.h"
+#include "common/memstream.h"
 #include "common/savefile.h"
 
 #include "engines/util.h"
@@ -1141,6 +1143,11 @@ bool Console::cmdDissectScript(int argc, const char **argv) {
 		return true;
 	}
 
+	if (_engine->getResMan()->isLsci()) {
+		debugPrintf("LSCI scripts become SCI0 images when they load; use scro, scrs and vo on them\n");
+		return true;
+	}
+
 	_engine->getKernel()->dissectScript(atoi(argv[1]), _engine->getVocabulary());
 
 	return true;
@@ -1270,7 +1277,43 @@ bool Console::cmdHexgrep(int argc, const char **argv) {
 	return true;
 }
 
+// Prints the size and MD5 of every LSCI script image, so that an independent converter can be checked
+static void verifyLsciScripts(Console &console, ResourceManager *resMan) {
+	Common::List<ResourceId> resources = resMan->listResources(kResourceTypeScript);
+	Common::sort(resources.begin(), resources.end());
+
+	uint converted = 0;
+	uint strayBranches = 0;
+	for (Common::List<ResourceId>::const_iterator it = resources.begin(); it != resources.end(); ++it) {
+		Resource *script = resMan->findResource(*it, false);
+		LsciContainer container;
+		LsciScriptImageWriter writer;
+		Common::Array<byte> image;
+		Common::String reason = "resource not found";
+		if (!script || !parseLsciContainer(*script, container, reason) || !writer.write(container, image, reason)) {
+			console.debugPrintf("%u not converted: %s\n", it->getNumber(), reason.c_str());
+			continue;
+		}
+
+		const Common::Array<LsciScriptImageWriter::StrayBranch> &strays = writer.getStrayBranches();
+		for (uint i = 0; i < strays.size(); ++i)
+			console.debugPrintf("%u item %u branch at %04x leaves its item (target %+d)\n", it->getNumber(), strays[i].item, strays[i].offset, strays[i].target);
+		strayBranches += strays.size();
+
+		Common::MemoryReadStream stream(image.data(), image.size());
+		console.debugPrintf("%u %u %s\n", it->getNumber(), image.size(), Common::computeStreamMD5AsString(stream).c_str());
+		++converted;
+	}
+
+	console.debugPrintf("%u LSCI scripts converted, %u not converted, %u out-of-item branches\n", converted, resources.size() - converted, strayBranches);
+}
+
 bool Console::cmdVerifyScripts(int argc, const char **argv) {
+	if (_engine->getResMan()->isLsci()) {
+		verifyLsciScripts(*this, _engine->getResMan());
+		return true;
+	}
+
 	if (getSciVersion() < SCI_VERSION_1_1) {
 		debugPrintf("This script check is only meant for SCI1.1-SCI3 games\n");
 		return true;
