@@ -171,6 +171,8 @@ AddrSet *findAllActiveReferences(EngineState *s) {
 	// LSCI: objects that only the network id table refers to
 	for (Common::HashMap<uint16, reg_t>::const_iterator it = s->_lsciSids.begin(); it != s->_lsciSids.end(); ++it)
 		wm.push(it->_value);
+	// LSCI: received messages that GetEvent has not handed over yet
+	wm.pushArray(s->_lsciNetworkMessages);
 
 	debugC(kDebugLevelGC, "[GC] -- Finished explicitly loaded scripts, done with root set");
 

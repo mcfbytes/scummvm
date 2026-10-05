@@ -102,18 +102,26 @@ static Common::Array<byte> formatTsnMessage(SegManager *segMan, const Common::St
 	return body;
 }
 
+// Receive hands each body over as a byte array, which the event then carries
+static void postNetworkMessages(EngineState *s, TsnSession &session) {
+	for (; session.hasMessage(); session.dropMessage())
+		s->_lsciNetworkMessages.push_back(makeLsciByteArray(s->_segMan, session.frontMessage()));
+}
+
 reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv) {
 	TsnSession &session = tsnSession();
 	session.runPollHooks();
+	postNetworkMessages(s, session);
 
 	const uint16 mask = argv[0].toUint16();
 	const bool peek = mask & kSciEventPeek;
 	const reg_t event = argv[1];
-	if ((mask & kLsciEventNetworkMessage) && session.hasMessage()) {
-		const Common::Array<byte> &body = session.frontMessage();
-		writeEvent(s->_segMan, event, kLsciEventNetworkMessage, makeLsciByteArray(s->_segMan, body), body.size());
+	Common::Array<reg_t> &messages = s->_lsciNetworkMessages;
+	if ((mask & kLsciEventNetworkMessage) && !messages.empty()) {
+		const reg_t message = messages.front();
+		writeEvent(s->_segMan, event, kLsciEventNetworkMessage, message, s->_segMan->lookupArray(message)->size());
 		if (!peek)
-			session.dropMessage();
+			messages.remove_at(0);
 		return TRUE_REG;
 	}
 	if ((mask & ~kSciEventPeek) == kLsciEventNetworkMessage) {
@@ -171,7 +179,9 @@ static reg_t kTsnDisconnect(EngineState *s, int argc, reg_t *argv) {
 }
 
 static reg_t kTsnPoll(EngineState *s, int argc, reg_t *argv) {
-	tsnSession().pump();
+	TsnSession &session = tsnSession();
+	session.pump();
+	postNetworkMessages(s, session);
 	return s->r_acc;
 }
 

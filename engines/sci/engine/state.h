@@ -113,6 +113,7 @@ struct EngineState : public Common::Serializable {
 	uint16 _lsciPollPeriod; /**< LSCI: the period of polling Wait() calls, in ticks */
 	Common::HashMap<uint16, reg_t> _lsciSids; /**< LSCI: script objects by the host's object id (SID) */
 	uint16 _lsciSidSlots; /**< LSCI: the size of the SID table */
+	Common::Array<reg_t> _lsciNetworkMessages; /**< LSCI: byte arrays of received messages, oldest first */
 	uint32 _screenUpdateTime;	/**< The last time the game updated the screen */
 
 	void speedThrottler(uint32 neededSleep);
