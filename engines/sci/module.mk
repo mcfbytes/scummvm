@@ -43,6 +43,7 @@ MODULE_OBJS := \
 	engine/tsn_envelope_parser.o \
 	engine/tsn_envelope_writer.o \
 	engine/tsn_offline_executive.o \
+	engine/tsn_online_executive.o \
 	engine/tsn_session.o \
 	engine/tts.o \
 	engine/vm.o \
