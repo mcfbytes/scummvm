@@ -350,6 +350,9 @@ reg_t kLsciSid(EngineState *s, int argc, reg_t *argv) {
 		s->_lsciSids.erase(sid);
 		return s->r_acc;
 	case kLsciSidLookup:
+		// Id 0 reads the variable LSCITV sets to the game object at start-up
+		if (!sid)
+			return g_sci->getGameObject();
 		return s->_lsciSids.getValOrDefault(sid, NULL_REG);
 	default:
 		warning("kSID: sub-op %d is not implemented", argv[0].toUint16());
