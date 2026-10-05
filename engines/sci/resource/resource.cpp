@@ -1013,7 +1013,7 @@ void ResourceManager::freeResourceSources() {
 }
 
 ResourceManager::ResourceManager(const bool detectionMode) :
-	_detectionMode(detectionMode) {}
+	_detectionMode(detectionMode), _isLsci(false) {}
 
 void ResourceManager::init() {
 	_maxMemoryLRU = 256 * 1024; // 256KiB
@@ -1081,6 +1081,7 @@ void ResourceManager::init() {
 	addScriptChunkSources();
 	scanNewSources();
 
+	_isLsci = detectLsci();
 	detectSciVersion();
 
 	debugC(1, kDebugLevelResMan, "resMan: Detected %s", getSciVersionDesc(getSciVersion()));
@@ -1531,6 +1532,14 @@ bool ResourceManager::detectSci2Mac() {
 	return false;
 }
 #endif
+
+bool ResourceManager::detectLsci() const {
+	for (ResourceMap::const_iterator it = _resMap.begin(); it != _resMap.end(); ++it) {
+		if (it->_key.getType() == kResourceTypeScript && it->_key.getNumber() >= kLsciModuleScriptBase)
+			return true;
+	}
+	return false;
+}
 
 bool ResourceManager::isBlacklistedPatch(const ResourceId &resId) const {
 	if (!g_sci)
@@ -2652,7 +2661,7 @@ void ResourceManager::detectSciVersion() {
 	}
 
 	// Set view type
-	if (viewCompression == kCompDCL
+	if ((viewCompression == kCompDCL && !_isLsci) // LSCI packs SCI1 VGA views with DCL
 		|| _volVersion == kResVersionSci11 // pq4demo
 		|| _volVersion == kResVersionSci11Mac
 #ifdef ENABLE_SCI32
@@ -3013,7 +3022,8 @@ static int relocateOffsetSci3(const SciSpan<const byte> &buf, uint32 offset) {
 reg_t ResourceManager::findGameObject(const bool addSci11ScriptOffset) {
 	Resource *script = findResource(ResourceId(kResourceTypeScript, 0), false);
 
-	if (!script)
+	// LSCI's game object is an item of script 0, not an offset into it
+	if (!script || _isLsci)
 		return NULL_REG;
 
 	SciSpan<const byte>::const_iterator offsetPtr;

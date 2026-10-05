@@ -421,6 +421,7 @@ public:
 	void changeMacAudioDirectory(const Common::Path &path);
 	bool isGMTrackIncluded();
 	bool isSci11Mac() const { return _volVersion == kResVersionSci11Mac; }
+	bool isLsci() const { return _isLsci; }
 	ViewType getViewType() const { return _viewType; }
 	const char *getMapVersionDesc() const { return versionDescription(_mapVersion); }
 	const char *getVolVersionDesc() const { return versionDescription(_volVersion); }
@@ -518,6 +519,7 @@ protected:
 	ResVersion _volVersion; ///< resource.0xx version
 	ResVersion _mapVersion; ///< resource.map version
 	bool _isSci2Mac;
+	bool _isLsci;
 
 	/**
 	 * Add a path to the resource manager's list of sources.
@@ -585,6 +587,7 @@ protected:
 #ifdef ENABLE_SCI32
 	bool detectSci2Mac();
 #endif
+	bool detectLsci() const;
 
 	/**
 	 * Reads the SCI0 resource.map file from a local directory.
