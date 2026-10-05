@@ -85,7 +85,7 @@ TsnEnvelopeWriter OnlineTsnExecutive::makeCall(TsnExport exportId) {
 
 TsnEnvelopeParser OnlineTsnExecutive::exchange(const TsnEnvelopeWriter &call) {
 	Common::Array<byte> envelope;
-	if (!call.isValid() || !_transport->send(call.frame()) || !receiveEnvelope(envelope))
+	if (!_transport->send(call.frame()) || !receiveEnvelope(envelope))
 		envelope.clear();
 
 	TsnEnvelopeParser reply(envelope);
@@ -162,6 +162,8 @@ uint16 OnlineTsnExecutive::connect(const Common::String &dialString) {
 
 	TsnEnvelopeWriter call = makeCall(kTsnExportConnect);
 	call.writeStr8(dialString, kTsnMaxDialStringSize);
+	if (!call.isValid())
+		return kTsnConnectNoCarrier;
 	TsnEnvelopeParser reply = exchange(call);
 	const byte result = reply.readByte();
 	return finish(reply) ? result : (uint16)kTsnConnectNoCarrier;
@@ -173,6 +175,8 @@ bool OnlineTsnExecutive::send(const Common::Array<byte> &body) {
 
 	TsnEnvelopeWriter call = makeCall(kTsnExportSend);
 	call.writeBytes16(body);
+	if (!call.isValid())
+		return false;
 	TsnEnvelopeParser reply = exchange(call);
 	const bool queued = reply.readBool();
 	return finish(reply) && queued;
@@ -230,6 +234,8 @@ uint16 OnlineTsnExecutive::switchHost(const Common::String &address) {
 
 	TsnEnvelopeWriter call = makeCall(kTsnExportSwitchHost);
 	call.writeStr8(address, kTsnMaxDialStringSize);
+	if (!call.isValid())
+		return kTsnSwitchNotConnected;
 	TsnEnvelopeParser reply = exchange(call);
 	const byte result = reply.readByte();
 	return finish(reply) ? result : (uint16)kTsnSwitchNotConnected;

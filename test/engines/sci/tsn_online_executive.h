@@ -169,5 +169,19 @@ public:
 		Sci::OnlineTsnExecutive executive(host);
 		TS_ASSERT_EQUALS(executive.connect("ATDT\x01"), Sci::kTsnConnectNoCarrier);
 		TS_ASSERT(host->sent == fromHex(kHello));
+		TS_ASSERT_EQUALS(host->closes, 0);
+	}
+
+	void test_oversized_message_is_refused_without_a_hang_up() {
+		LoopbackTransport *host = new LoopbackTransport();
+		host->reply(kWelcome);
+		host->reply(kConnected);
+		host->reply(kPollOk);
+		Sci::OnlineTsnExecutive executive(host);
+		TS_ASSERT_EQUALS(executive.connect("ATDT0"), Sci::kTsnConnected);
+		const uint sentBefore = host->sent.size();
+		TS_ASSERT(!executive.send(Common::Array<byte>(0x10000, 0)));
+		TS_ASSERT_EQUALS(host->sent.size(), sentBefore);
+		TS_ASSERT_EQUALS(executive.poll(), Sci::kTsnLinkOk);
 	}
 };
