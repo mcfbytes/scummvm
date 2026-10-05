@@ -644,24 +644,35 @@ Resource *ResourceManager::testResource(const ResourceId &id) const {
 	return _resMap.getValOrDefault(id, NULL);
 }
 
-void ResourceManager::addAppropriateSources() {
+void ResourceManager::addAppropriateSources(const Common::Path &landDirectory) {
 #ifdef ENABLE_SCI32
 	_multiDiscAudio = false;
 #endif
-	if (Common::File::exists("resource.map")) {
+	const Common::Path mapFile = landDirectory.join("resource.map");
+	if (Common::File::exists(mapFile)) {
 		// SCI0-SCI2 file naming scheme
-		ResourceSource *map = addExternalMap("resource.map");
+		ResourceSource *map = addExternalMap(mapFile);
 
 		Common::ArchiveMemberList files;
-		SearchMan.listMatchingMembers(files, "resource.0##");
+		SearchMan.listMatchingMembers(files, landDirectory.join("resource.0##"));
 
 		Common::sort(files.begin(), files.end(), Common::ArchiveMemberListComparator());
+
+		// LSCI lands share the volumes they lack (RESOURCE.002) with the game directory
+		if (!landDirectory.empty()) {
+			Common::ArchiveMemberList sharedFiles;
+			SearchMan.listMatchingMembers(sharedFiles, "resource.0##");
+			Common::sort(sharedFiles.begin(), sharedFiles.end(), Common::ArchiveMemberListComparator());
+			files.insert(files.end(), sharedFiles.begin(), sharedFiles.end());
+		}
+
 		for (Common::ArchiveMemberList::const_iterator x = files.begin(); x != files.end(); ++x) {
 			const Common::String name = (*x)->getFileName();
 			const char *dot = strrchr(name.c_str(), '.');
 			int number = atoi(dot + 1);
 
-			addSource(new VolumeResourceSource((*x)->getPathInArchive(), map, number));
+			if (!findVolume(map, number))
+				addSource(new VolumeResourceSource((*x)->getPathInArchive(), map, number));
 		}
 #ifdef ENABLE_SCI32
 		// GK1CD hires content

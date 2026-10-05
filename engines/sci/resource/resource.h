@@ -364,7 +364,7 @@ public:
 	/**
 	 * Adds all of the resource files for a game
 	 */
-	void addAppropriateSources();
+	void addAppropriateSources(const Common::Path &landDirectory = Common::Path());
 
 	/**
 	 * Similar to the function above, only called from the fallback detector

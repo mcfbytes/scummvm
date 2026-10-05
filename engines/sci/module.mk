@@ -83,6 +83,7 @@ MODULE_OBJS := \
 	parser/said.o \
 	parser/vocabulary.o \
 	resource/decompressor.o \
+	resource/lsci_land.o \
 	resource/resource.o \
 	resource/resource_audio.o \
 	resource/resource_patcher.o \

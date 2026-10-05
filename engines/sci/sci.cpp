@@ -43,6 +43,7 @@
 #include "sci/engine/selector.h"	// for SELECTOR
 #include "sci/engine/scriptdebug.h"
 #include "sci/engine/tts.h"
+#include "sci/resource/lsci_land.h"
 
 #include "sci/sound/audio.h"
 #include "sci/sound/music.h"
@@ -277,7 +278,7 @@ Common::Error SciEngine::run() {
 	_tts = new SciTTS();
 
 	_resMan = new ResourceManager();
-	_resMan->addAppropriateSources();
+	_resMan->addAppropriateSources(getLsciLandDirectory(ConfMan.get("lsci_land")));
 	_resMan->init();
 
 	// TODO: Add error handling. Check return values of addAppropriateSources
