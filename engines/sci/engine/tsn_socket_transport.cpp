@@ -22,19 +22,23 @@
 #include "backends/networking/basic/socket.h"
 #include "common/system.h"
 
+#include "sci/sci.h"
 #include "sci/engine/tsn_socket_transport.h"
 
 namespace Sci {
 
 enum {
 	kTsnReplyTimeoutMillis = 10000,
+	kTsnReplyPollMillis = 1,
 	kTsnReceiveChunkSize = 4096
 };
 
 // Told to connect only, libcurl opens a plain TCP connection for an http URL
 // and sends nothing, which the SCUMM HE lobby relies on too.
-TsnSocketTransport::TsnSocketTransport(const Common::String &host, int port) :
-	_url(Common::String::format("http://%s:%d", host.c_str(), port)) {
+TsnSocketTransport::TsnSocketTransport(const Common::String &host, int port) {
+	const bool ipv6 = host.contains(':') && !host.hasPrefix("[");
+	const Common::String address = ipv6 ? "[" + host + "]" : host;
+	_url = Common::String::format("http://%s:%d", address.c_str(), port);
 }
 
 TsnSocketTransport::~TsnSocketTransport() {
@@ -55,7 +59,7 @@ bool TsnSocketTransport::send(const Common::Array<byte> &bytes) {
 
 bool TsnSocketTransport::receive(Common::Array<byte> &bytes) {
 	const uint32 deadline = g_system->getMillis() + kTsnReplyTimeoutMillis;
-	while (_socket.get()) {
+	while (_socket.get() && !g_sci->shouldQuit()) {
 		const int ready = _socket->ready();
 		if (ready < 0)
 			return false;
@@ -67,7 +71,8 @@ bool TsnSocketTransport::receive(Common::Array<byte> &bytes) {
 		}
 		if (g_system->getMillis() >= deadline)
 			return false;
-		g_system->delayMillis(1);
+		// The reply is awaited as kWait waits: events and the screen stay live
+		g_sci->sleep(kTsnReplyPollMillis);
 	}
 	return false;
 }

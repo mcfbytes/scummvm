@@ -41,7 +41,10 @@ TsnExecutive *makeTsnExecutive() {
 
 #ifdef USE_BASIC_NET
 	const int port = ConfMan.hasKey("lsci_port") ? ConfMan.getInt("lsci_port") : (int)kInnkeeperdTransportPort;
-	return new OnlineTsnExecutive(new TsnSocketTransport(host, port));
+	if (port > 0 && port <= 0xFFFF)
+		return new OnlineTsnExecutive(new TsnSocketTransport(host, port));
+	warning("lsci_port %d is not a TCP port: the TSN executive stays offline", port);
+	return new OfflineTsnExecutive();
 #else
 	warning("lsci_host is set, but this build has no basic networking: the TSN executive stays offline");
 	return new OfflineTsnExecutive();
