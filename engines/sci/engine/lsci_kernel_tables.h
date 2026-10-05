@@ -23,11 +23,11 @@
 #define SCI_ENGINE_LSCI_KERNEL_TABLES_H
 
 #include "sci/engine/kernel_tables.h"
+#include "sci/engine/lsci_kernel.h"
 
 namespace Sci {
 
 // LSCI's built-in kernel table in dispatch order, the same in every known build.
-// LSCI's built-in kernel table, in the interpreter's dispatch order.
 static const char *const s_lsciKernelNames[] = {
 	"IsObject",         // 0x00
 	"ObjectFree",       // 0x01
@@ -129,14 +129,37 @@ static const char *const s_lsciDllKernelNamesAssumed[] = {
 	"SetSynonyms"       // 0x5c
 };
 
-// LSCI kernels that match an SCI kernel or do nothing in the original. Unlisted names
-// fall back to kStub; several clash with SCI kernels of another meaning.
+#ifdef ENABLE_SCI32
+// The sub-op number is the TSN executive's export number; four exports are not for scripts
+static const SciKernelMapSubEntry kTsn_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(TsnGetStatus),          "",          nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(TsnGetSharedData),      "",          nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(TsnSetSharedData),      "[r0]i",     nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(TsnConnect),            "[ro]",      nullptr },
+	{ SIG_SCIALL,  4, MAP_CALL(TsnSend),               "[ro](.*)",  nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
+	{ SIG_SCIALL,  7, MAP_CALL(TsnDisconnect),         "",          nullptr },
+	{ SIG_SCIALL,  8, MAP_CALL(TsnPoll),               "",          nullptr },
+	{ SIG_SCIALL,  9, MAP_CALL(TsnSetNextProgram),     "[ro0]",     nullptr },
+	{ SIG_SCIALL, 10, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
+	{ SIG_SCIALL, 11, MAP_CALL(TsnGetPreviousProgram), "",          nullptr },
+	{ SIG_SCIALL, 12, MAP_CALL(TsnIsTransmitIdle),     "",          nullptr },
+	{ SIG_SCIALL, 13, MAP_CALL(TsnSwitchHost),         "[ro]",      nullptr },
+	{ SIG_SCIALL, 14, MAP_CALL(TsnFlush),              "",          nullptr },
+	{ SIG_SCIALL, 15, MAP_CALL(TsnReserved),           "(.*)",      nullptr },
+	{ SIG_SCIALL, 16, MAP_CALL(TsnGetLineRate),        "",          nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+#endif
+
+// LSCI kernels by name. Unlisted names fall back to kStub; several clash with SCI
+// kernels of another meaning. LSCI's own kernels need SCI32's arrays.
 static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_CALL(IsObject),                SIG_EVERYWHERE, ".",              nullptr, nullptr },
 	{ "ObjectRespondsTo", kRespondsTo,   SIG_EVERYWHERE, ".i",             nullptr, nullptr },
 	{ "ModuleID", kScriptID,             SIG_EVERYWHERE, "[io](i)",        nullptr, nullptr },
 	{ MAP_CALL(GetFarText),              SIG_EVERYWHERE, "ii[r0]",         nullptr, nullptr },
-	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },
 	{ MAP_CALL(MapKeyToDir),             SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ MAP_CALL(HaveMouse),               SIG_EVERYWHERE, "",               nullptr, nullptr },
 	{ MAP_EMPTY(CheckSaveGame),          SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
@@ -159,6 +182,12 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_EMPTY(ShowFree),               SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
 	{ MAP_CALL(Joystick),                SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ MAP_CALL(ScummVMSleep),            SIG_EVERYWHERE, "i",              nullptr, nullptr },
+#ifdef ENABLE_SCI32
+	{ "GetEvent", kLsciGetEvent,         SIG_EVERYWHERE, "io",             nullptr, nullptr },
+	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          kTsn_subops, nullptr },
+#else
+	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },
+#endif
 	{ nullptr, nullptr,                  SIG_EVERYWHERE, nullptr,          nullptr, nullptr }
 };
 
