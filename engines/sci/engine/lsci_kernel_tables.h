@@ -223,7 +223,6 @@ static const SciKernelMapSubEntry kLsciGraph_subops[] = {
 // LSCI kernels by name. Unlisted names fall back to kStub; several clash with SCI
 // kernels of another meaning. LSCI's own kernels need SCI32's arrays.
 static const SciKernelMapEntry s_lsciKernelMap[] = {
-	{ MAP_CALL(IsObject),                SIG_EVERYWHERE, ".",              nullptr, nullptr },
 	{ "ObjectFree", kDisposeClone,       SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ "ObjectRespondsTo", kRespondsTo,   SIG_EVERYWHERE, ".i",             nullptr, nullptr },
 	{ "ModuleID", kScriptID,             SIG_EVERYWHERE, "[io](i)",        nullptr, nullptr },
@@ -262,6 +261,7 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_CALL(CelWide),                 SIG_EVERYWHERE, "ii(i)",          nullptr, nullptr },
 	{ "Sound", kDoSound,                 SIG_EVERYWHERE, "i(.*)",          kDoSound_subops, nullptr },
 #ifdef ENABLE_SCI32
+	{ "IsObject", kLsciIsObject,         SIG_EVERYWHERE, ".",              nullptr, nullptr },
 	{ MAP_CALL(ObjectNew),               SIG_EVERYWHERE, "o(.*)",          nullptr, nullptr },
 	{ "Array", kArray,                   SIG_EVERYWHERE, "i(.*)",          kLsciArray_subops, nullptr },
 	{ "Resource", kLsciResource,         SIG_EVERYWHERE, "ii(i*)",         nullptr, nullptr },
@@ -296,6 +296,7 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ "Graph", kGraph,                   SIG_EVERYWHERE, "i(.*)",          kLsciGraph_subops, nullptr },
 	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 #else
+	{ MAP_CALL(IsObject),                SIG_EVERYWHERE, ".",              nullptr, nullptr },
 	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },
 #endif
 	{ nullptr, nullptr,                  SIG_EVERYWHERE, nullptr,          nullptr, nullptr }

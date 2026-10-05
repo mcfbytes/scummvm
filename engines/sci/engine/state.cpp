@@ -106,6 +106,7 @@ void EngineState::reset(bool isRestoring) {
 	_lsciPollPeriod = 0;
 	_lsciSids.clear();
 	_lsciSidSlots = 0;
+	_lsciHandles.clear();
 	_lsciNetworkMessages.clear();
 
 	gcCountDown = 0;

@@ -25,6 +25,7 @@
 #include "sci/sci.h"
 #include "sci/engine/kernel.h"
 #include "sci/engine/lsci_array.h"
+#include "sci/engine/lsci_handle.h"
 #include "sci/engine/lsci_kernel.h"
 #include "sci/engine/selector.h"
 #include "sci/engine/state.h"
@@ -331,6 +332,11 @@ reg_t kLsciLong(EngineState *s, int argc, reg_t *argv) {
 	writeSelectorValue(segMan, object, g_sci->getKernel()->findSelector("highWord"), (uint32)value >> 16);
 	writeSelectorValue(segMan, object, g_sci->getKernel()->findSelector("lowWord"), value & 0xFFFF);
 	return object;
+}
+
+reg_t kLsciIsObject(EngineState *s, int argc, reg_t *argv) {
+	reg_t object = resolveLsciHandle(s, argv[0]);
+	return kIsObject(s, 1, &object);
 }
 
 reg_t kLsciSid(EngineState *s, int argc, reg_t *argv) {

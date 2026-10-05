@@ -23,6 +23,7 @@
 #include "sci/event.h"
 #include "sci/engine/kernel.h"
 #include "sci/engine/lsci_array.h"
+#include "sci/engine/lsci_handle.h"
 #include "sci/engine/lsci_kernel.h"
 #include "sci/engine/selector.h"
 #include "sci/engine/state.h"
@@ -58,8 +59,14 @@ static void appendWord(Common::Array<byte> &body, uint16 word) {
 	body.push_back(word >> 8);
 }
 
+// A reference leaves as the 16-bit handle that LSCI would have sent
+static uint16 toTsnWord(EngineState *s, reg_t value) {
+	return value.getSegment() ? getLsciHandle(s, value) : value.getOffset();
+}
+
 // The formatted send of TSN(4), codes b, w, s, a and + as docs/protocol/ktsn.md lists them
-static Common::Array<byte> formatTsnMessage(SegManager *segMan, const Common::String &format, int argc, const reg_t *argv) {
+static Common::Array<byte> formatTsnMessage(EngineState *s, const Common::String &format, int argc, const reg_t *argv) {
+	SegManager *segMan = s->_segMan;
 	Common::Array<byte> body;
 	int next = 0;
 	char previous = 0;
@@ -70,7 +77,7 @@ static Common::Array<byte> formatTsnMessage(SegManager *segMan, const Common::St
 				if (previous == 'b')
 					body.push_back(argv[next].getOffset() & 0xFF);
 				else
-					appendWord(body, argv[next].getOffset());
+					appendWord(body, toTsnWord(s, argv[next]));
 			}
 			continue;
 		}
@@ -82,7 +89,7 @@ static Common::Array<byte> formatTsnMessage(SegManager *segMan, const Common::St
 			body.push_back(value.getOffset() & 0xFF);
 			break;
 		case 'w':
-			appendWord(body, value.getOffset());
+			appendWord(body, toTsnWord(s, value));
 			break;
 		case 's': {
 			const Common::String text = getLsciString(segMan, value);
@@ -164,7 +171,7 @@ static reg_t kTsnConnect(EngineState *s, int argc, reg_t *argv) {
 static reg_t kTsnSend(EngineState *s, int argc, reg_t *argv) {
 	TsnExecutive &executive = tsnExecutive();
 	const Common::String format = getLsciString(s->_segMan, argv[0]);
-	const Common::Array<byte> body = formatTsnMessage(s->_segMan, format, argc - 1, argv + 1);
+	const Common::Array<byte> body = formatTsnMessage(s, format, argc - 1, argv + 1);
 	if (body.empty())
 		return NULL_REG;
 	return make_reg(0, executive.send(body));

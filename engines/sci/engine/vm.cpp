@@ -29,6 +29,7 @@
 #include "sci/engine/guest_additions.h"
 #include "sci/engine/state.h"
 #include "sci/engine/kernel.h"
+#include "sci/engine/lsci_handle.h"
 #include "sci/engine/object.h"
 #include "sci/engine/script.h"
 #include "sci/engine/seg_manager.h"
@@ -430,6 +431,13 @@ static void callKernelFunc(EngineState *s, int kernelCallNr, int argc) {
 		s->_executionStack.pop_back();
 }
 
+// LSCI: a reference also equals the handle that the host echoed back for it
+static bool valuesEqual(EngineState *s, reg_t left, reg_t right) {
+	if (left == right)
+		return true;
+	return g_sci->getResMan()->isLsci() && resolveLsciHandle(s, left) == resolveLsciHandle(s, right);
+}
+
 int readPMachineInstruction(const byte *src, byte &extOpcode, int16 opparams[4]) {
 	uint offset = 0;
 	extOpcode = src[offset++]; // Get "extended" opcode (lower bit has special meaning)
@@ -707,12 +715,12 @@ void run_vm(EngineState *s) {
 
 		case op_eq_: // 0x0d (13)
 			s->r_prev = s->r_acc;
-			s->r_acc  = make_reg(0, POP32() == s->r_acc);
+			s->r_acc  = make_reg(0, valuesEqual(s, POP32(), s->r_acc));
 			break;
 
 		case op_ne_: // 0x0e (14)
 			s->r_prev = s->r_acc;
-			s->r_acc  = make_reg(0, POP32() != s->r_acc);
+			s->r_acc  = make_reg(0, !valuesEqual(s, POP32(), s->r_acc));
 			break;
 
 		case op_gt_: // 0x0f (15)
@@ -967,6 +975,9 @@ void run_vm(EngineState *s) {
 			s->xs->sp -= ((opparams[0] >> 1) + s->r_rest); // Adjust stack
 
 			s->xs->sp[1].incOffset(s->r_rest);
+			// LSCI: a number may be an object handle that came back from the host
+			if (!s->r_acc.getSegment() && g_sci->getResMan()->isLsci())
+				s->r_acc = resolveLsciHandle(s, s->r_acc);
 			xs_new = send_selector(s, s->r_acc, s->r_acc, s_temp,
 									(int)(opparams[0] >> 1) + (uint16)s->r_rest, s->xs->sp);
 

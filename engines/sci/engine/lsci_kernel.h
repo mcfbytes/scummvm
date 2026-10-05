@@ -43,6 +43,7 @@ reg_t kLsciMemory(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciStringGetToken(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciLong(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciSid(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciIsObject(EngineState *s, int argc, reg_t *argv);
 
 reg_t kLsciSetCursor(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciAnimate(EngineState *s, int argc, reg_t *argv);
