@@ -132,9 +132,6 @@ class SciSpanImpl : public Common::NamedSpanImpl<ValueType, Derived> {
 	typedef Derived<ValueType> derived_type;
 
 	template <typename T, template <typename> class U> friend class SciSpanImpl;
-#if defined(CXXTEST_RUNNING) && CXXTEST_RUNNING
-	friend class ::SpanTestSuite;
-#endif
 
 public:
 	typedef typename super_type::value_type value_type;
