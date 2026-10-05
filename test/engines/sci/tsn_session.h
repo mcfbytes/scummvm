@@ -11,7 +11,7 @@ public:
 	FakeTsnExecutive(int *callbackCount) : callbacks(callbackCount), ackTimeout(0), connectResult(Sci::kTsnConnected),
 		connected(false), polls(0), services(0), pollResult(Sci::kTsnLinkOk), serviceResult(Sci::kTsnLinkOk) {}
 
-	Sci::TsnStatus getStatus() const override {
+	Sci::TsnStatus getStatus() override {
 		const Sci::TsnStatus status = { 3, (byte)(connected ? Sci::kTsnConnectionUp : 0) };
 		return status;
 	}
@@ -35,11 +35,11 @@ public:
 	void setNextProgram(const Common::String &name) override {}
 	Sci::TsnLinkStatus service() override { ++services; return serviceResult; }
 	Common::String getPreviousProgram() const override { return Common::String(); }
-	bool isTransmitIdle() const override { return true; }
+	bool isTransmitIdle() override { return true; }
 	uint16 switchHost(const Common::String &address) override { return Sci::kTsnConnected; }
 	void flush() override {}
 	void setCallbacks(bool installed) override { *callbacks += installed ? 1 : -1; }
-	uint16 getLineRate() const override { return 2400; }
+	uint16 getLineRate() override { return 2400; }
 
 	int *callbacks;
 	uint16 ackTimeout;

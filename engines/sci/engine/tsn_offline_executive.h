@@ -30,7 +30,7 @@ namespace Sci {
 // with no carrier, so the scripts take the error paths of a failed logon.
 class OfflineTsnExecutive : public TsnExecutive {
 public:
-	TsnStatus getStatus() const override;
+	TsnStatus getStatus() override;
 	Common::Array<byte> getSharedData() const override;
 	void setSharedData(const Common::Array<byte> &block) override;
 	uint16 connect(const Common::String &dialString) override;
@@ -42,11 +42,11 @@ public:
 	void setNextProgram(const Common::String &name) override;
 	TsnLinkStatus service() override;
 	Common::String getPreviousProgram() const override;
-	bool isTransmitIdle() const override;
+	bool isTransmitIdle() override;
 	uint16 switchHost(const Common::String &address) override;
 	void flush() override;
 	void setCallbacks(bool installed) override;
-	uint16 getLineRate() const override;
+	uint16 getLineRate() override;
 
 private:
 	Common::Array<byte> _sharedData;

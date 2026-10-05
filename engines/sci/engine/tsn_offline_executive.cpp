@@ -31,7 +31,7 @@ enum {
 	kModemInitialLineRate = 1200
 };
 
-TsnStatus OfflineTsnExecutive::getStatus() const {
+TsnStatus OfflineTsnExecutive::getStatus() {
 	const TsnStatus status = { kModemDriverId, 0 };
 	return status;
 }
@@ -81,7 +81,7 @@ Common::String OfflineTsnExecutive::getPreviousProgram() const {
 	return Common::String();
 }
 
-bool OfflineTsnExecutive::isTransmitIdle() const {
+bool OfflineTsnExecutive::isTransmitIdle() {
 	return true;
 }
 
@@ -96,7 +96,7 @@ void OfflineTsnExecutive::setCallbacks(bool installed) {
 	// Message bodies are copied, so there are no handles to call back for
 }
 
-uint16 OfflineTsnExecutive::getLineRate() const {
+uint16 OfflineTsnExecutive::getLineRate() {
 	return kModemInitialLineRate;
 }
 

@@ -82,7 +82,7 @@ class TsnExecutive {
 public:
 	virtual ~TsnExecutive() {}
 
-	virtual TsnStatus getStatus() const = 0;
+	virtual TsnStatus getStatus() = 0;
 	virtual Common::Array<byte> getSharedData() const = 0;
 	virtual void setSharedData(const Common::Array<byte> &block) = 0;
 	virtual uint16 connect(const Common::String &dialString) = 0;
@@ -94,11 +94,11 @@ public:
 	virtual void setNextProgram(const Common::String &name) = 0;
 	virtual TsnLinkStatus service() = 0;
 	virtual Common::String getPreviousProgram() const = 0;
-	virtual bool isTransmitIdle() const = 0;
+	virtual bool isTransmitIdle() = 0;
 	virtual uint16 switchHost(const Common::String &address) = 0;
 	virtual void flush() = 0;
 	virtual void setCallbacks(bool installed) = 0;
-	virtual uint16 getLineRate() const = 0;
+	virtual uint16 getLineRate() = 0;
 };
 
 } // End of namespace Sci
