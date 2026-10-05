@@ -79,6 +79,11 @@ enum {
 	MAX_OPENED_VOLUMES = 5 ///< Max number of simultaneously opened volumes
 };
 
+// LSCI (The Sierra Network's SCI variant) resource facts
+enum {
+	kLsciCompressionDcl = 8         ///< LSCI's compression number for PKWARE DCL
+};
+
 enum ResourceType {
 	kResourceTypeView = 0,
 	kResourceTypePic,

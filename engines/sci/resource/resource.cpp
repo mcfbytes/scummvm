@@ -1447,7 +1447,7 @@ ResVersion ResourceManager::detectVolVersion() {
 			chk = 32; // We don't need this, but include it for completeness
 
 		int offs = curVersion < kResVersionSci11 ? 4 : 0;
-		if ((curVersion < kResVersionSci2 && wCompression > chk)
+		if ((curVersion < kResVersionSci2 && wCompression > chk && wCompression != kLsciCompressionDcl)
 				|| (curVersion == kResVersionSci2 && wCompression != 0 && wCompression != 32)
 				|| (wCompression == 0 && dwPacked != dwUnpacked + offs)
 		        || (dwUnpacked < dwPacked - offs)) {
@@ -2347,6 +2347,7 @@ int Resource::readResourceInfo(ResVersion volVersion, Common::SeekableReadStream
 	case 4:
 		compression = kCompLZW1Pic;
 		break;
+	case kLsciCompressionDcl:
 	case 18:
 	case 19:
 	case 20:
