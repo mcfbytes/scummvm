@@ -30,6 +30,7 @@ struct EngineState;
 
 #ifdef ENABLE_SCI32
 reg_t kLsciResource(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciGetFarText(EngineState *s, int argc, reg_t *argv);
 reg_t kObjectNew(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciConfigStr(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciArrayNew(EngineState *s, int argc, reg_t *argv);

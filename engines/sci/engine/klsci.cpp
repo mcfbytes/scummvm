@@ -153,6 +153,15 @@ reg_t kLsciResource(EngineState *s, int argc, reg_t *argv) {
 	return s->r_acc;
 }
 
+reg_t kLsciGetFarText(EngineState *s, int argc, reg_t *argv) {
+	// The destination is an array that grows to hold the text
+	const Common::String text = g_sci->getKernel()->lookupText(make_reg(0, argv[0].toUint16()), argv[1].toUint16());
+	SciArray &array = *s->_segMan->lookupArray(argv[2]);
+	array.resize(text.size() + 1);
+	memcpy(array.getRawData(), text.c_str(), text.size() + 1);
+	return argv[2];
+}
+
 reg_t kLsciArrayNew(EngineState *s, int argc, reg_t *argv) {
 	reg_t handle;
 	s->_segMan->allocateArray((SciArrayType)argv[1].toUint16(), argv[0].toUint16(), &handle);
