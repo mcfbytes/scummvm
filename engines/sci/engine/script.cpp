@@ -88,6 +88,10 @@ void Script::load(int script_nr, ResourceManager *resMan, ScriptPatcher *scriptP
 	if (!script)
 		error("Script %d not found", script_nr);
 
+	// TODO: LSCI scripts are item containers with per-procedure code
+	if (resMan->isLsci())
+		error("Script %d is an LSCI item container, which is not supported yet", script_nr);
+
 	_nr = script_nr;
 	uint32 scriptSize = script->size();
 	uint32 bufSize = scriptSize;
