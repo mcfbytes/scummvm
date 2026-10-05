@@ -25,6 +25,7 @@
 #include "sci/resource/resource.h"
 #include "sci/engine/features.h"
 #include "sci/engine/kernel_tables.h"
+#include "sci/engine/lsci_kernel_tables.h"
 #include "sci/engine/state.h"
 #include "sci/engine/workarounds.h"
 
@@ -621,7 +622,7 @@ void Kernel::mapFunctions(GameFeatures *features) {
 
 		// If the name is known, look it up in s_kernelMap. This table
 		// maps kernel func names to actual function (pointers).
-		SciKernelMapEntry *kernelMap = s_kernelMap;
+		const SciKernelMapEntry *kernelMap = _resMan->isLsci() ? s_lsciKernelMap : s_kernelMap;
 		bool nameMatch = false;
 		while (kernelMap->name) {
 			if (kernelName == kernelMap->name) {
@@ -723,7 +724,10 @@ enum {
 void Kernel::loadKernelNames(GameFeatures *features) {
 	_kernelNames.clear();
 
-	if (getSciVersion() <= SCI_VERSION_1_1) {
+	if (_resMan->isLsci()) {
+		_kernelNames = Common::StringArray(s_lsciKernelNames, ARRAYSIZE(s_lsciKernelNames));
+		_kernelNames.push_back(Common::StringArray(s_lsciDllKernelNamesAssumed, ARRAYSIZE(s_lsciDllKernelNamesAssumed)));
+	} else if (getSciVersion() <= SCI_VERSION_1_1) {
 		_kernelNames = Common::StringArray(s_defaultKernelNames, ARRAYSIZE(s_defaultKernelNames));
 
 		// Some (later) SCI versions replaced CanBeHere by CantBeHere

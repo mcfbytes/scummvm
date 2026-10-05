@@ -364,6 +364,10 @@ Common::Error SciEngine::run() {
 	_console = new Console(this);
 	setDebugger(_console);
 
+	// LSCI's kernel table is fixed, so it does not wait for the script-based features
+	if (_resMan->isLsci())
+		_kernel->loadKernelNames(_features);
+
 	// The game needs to be initialized before the graphics system is initialized, as
 	// the graphics code checks parts of the seg manager upon initialization (e.g. for
 	// the presence of the fastCast object)
@@ -383,7 +387,8 @@ Common::Error SciEngine::run() {
 	script_adjust_opcode_formats();
 
 	// Must be called after game_init(), as they use _features
-	_kernel->loadKernelNames(_features);
+	if (!_resMan->isLsci())
+		_kernel->loadKernelNames(_features);
 
 	// Initialize all graphics related subsystems
 	initGraphics();
