@@ -67,6 +67,10 @@ reg_t kLsciFileWriteString(EngineState *s, int argc, reg_t *argv) {
 }
 
 reg_t kLsciFileReadString(EngineState *s, int argc, reg_t *argv) {
+	// Scripts read the fields of a record by length, and the last length can be 0
+	if (argv[1].isNull())
+		return NULL_REG;
+
 	reg_t args[3] = { getLsciStringHandle(s, argv[0]), argv[1], argv[2] };
 	return kFileIOReadString(s, 3, args).isNull() ? NULL_REG : argv[0];
 }
