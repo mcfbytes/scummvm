@@ -185,6 +185,19 @@ static const SciKernelMapSubEntry kLsciString_subops[] = {
 	SCI_SUBOPENTRY_TERMINATOR
 };
 
+// Rects come as Rect objects; lines take y before x as in SCI
+static const SciKernelMapSubEntry kLsciGraph_subops[] = {
+	{ SIG_SCIALL,  1, MAP_CALL(GraphGetColorCount),    "",          nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(GraphDrawLine),         "iiiii(i)(i)", nullptr },
+	{ SIG_SCIALL,  4, MAP_EMPTY(GraphReserved),        "(.*)",      nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(LsciGraphSaveBits),     "oi",        nullptr },
+	{ SIG_SCIALL,  7, MAP_CALL(GraphRestoreBox),       "[r0!](.*)", nullptr },
+	{ SIG_SCIALL, 10, MAP_CALL(LsciGraphFillRect),     "oii(i)(i)", nullptr },
+	{ SIG_SCIALL, 11, MAP_CALL(LsciGraphShowBits),     "o(i)",      nullptr },
+	{ SIG_SCIALL, 12, MAP_CALL(LsciGraphRedrawBox),    "o(i)",      nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
 // The sub-op number is the TSN executive's export number; four exports are not for scripts
 static const SciKernelMapSubEntry kTsn_subops[] = {
 	{ SIG_SCIALL,  0, MAP_CALL(TsnGetStatus),          "",          nullptr },
@@ -216,6 +229,9 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ "ObjectRespondsTo", kRespondsTo,   SIG_EVERYWHERE, ".i",             nullptr, nullptr },
 	{ "ModuleID", kScriptID,             SIG_EVERYWHERE, "[io](i)",        nullptr, nullptr },
 	{ MAP_CALL(GetFarText),              SIG_EVERYWHERE, "ii[r0]",         nullptr, nullptr },
+	{ MAP_CALL(DrawPic),                 SIG_EVERYWHERE, "i(i)(i)(i)",     nullptr, nullptr },
+	{ MAP_CALL(GlobalToLocal),           SIG_EVERYWHERE, "o",              nullptr, nullptr },
+	{ MAP_CALL(LocalToGlobal),           SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ MAP_CALL(MapKeyToDir),             SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ MAP_CALL(HaveMouse),               SIG_EVERYWHERE, "",               nullptr, nullptr },
 	{ MAP_EMPTY(CheckSaveGame),          SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
@@ -237,23 +253,47 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_EMPTY(SetDebug),               SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
 	{ MAP_EMPTY(ShowFree),               SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
 	{ MAP_CALL(Joystick),                SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
+	{ MAP_CALL(Palette),                 SIG_EVERYWHERE, "i(.*)",          kPalette_subops, nullptr },
 	{ MAP_CALL(ScummVMSleep),            SIG_EVERYWHERE, "i",              nullptr, nullptr },
+	{ MAP_CALL(GetPort),                 SIG_EVERYWHERE, "",               nullptr, nullptr },
+	{ "PicState", kPicNotValid,          SIG_EVERYWHERE, "(i)",            nullptr, nullptr },
 	{ MAP_EMPTY(SetSynonyms),            SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
+	{ "WindowDispose", kDisposeWindow,   SIG_EVERYWHERE, "i",              nullptr, nullptr },
+	{ MAP_CALL(CelHigh),                 SIG_EVERYWHERE, "ii(i)",          nullptr, nullptr },
+	{ MAP_CALL(CelWide),                 SIG_EVERYWHERE, "ii(i)",          nullptr, nullptr },
+	{ "Sound", kDoSound,                 SIG_EVERYWHERE, "i(.*)",          kDoSound_subops, nullptr },
 #ifdef ENABLE_SCI32
 	{ MAP_CALL(ObjectNew),               SIG_EVERYWHERE, "o(.*)",          nullptr, nullptr },
 	{ "Array", kArray,                   SIG_EVERYWHERE, "i(.*)",          kLsciArray_subops, nullptr },
 	{ "Resource", kLsciResource,         SIG_EVERYWHERE, "ii(i*)",         nullptr, nullptr },
 	{ "GetEvent", kLsciGetEvent,         SIG_EVERYWHERE, "io",             nullptr, nullptr },
+	{ "SetCursor", kLsciSetCursor,       SIG_EVERYWHERE, "i(i*)",          nullptr, nullptr },
 	{ "ConfigStr", kLsciConfigStr,       SIG_EVERYWHERE, "[ro]",           nullptr, nullptr },
+	{ "Animate", kLsciAnimate,           SIG_EVERYWHERE, "([r0])(i)",      nullptr, nullptr },
+	{ "Display", kLsciDisplay,           SIG_EVERYWHERE, "[iro]([ir!]*)",  nullptr, nullptr },
+	{ "TextSize", kLsciTextSize,         SIG_EVERYWHERE, "o[ro]i(i)",      nullptr, nullptr },
+	{ "CelRect", kLsciCelRect,           SIG_EVERYWHERE, "oiiiii(i)(i)(i)", nullptr, nullptr },
+	{ "DrawCel", kLsciDrawCel,           SIG_EVERYWHERE, "iiiii(i)([ro0])(i)(i)", nullptr, nullptr },
 	{ "Wait", kLsciWait,                 SIG_EVERYWHERE, "i(i)",           nullptr, nullptr },
+	{ "SetPort", kLsciSetPort,           SIG_EVERYWHERE, "(i)",            nullptr, nullptr },
+	{ "WindowNew", kLsciWindowNew,       SIG_EVERYWHERE, "o",              nullptr, nullptr },
+	{ "DrawControl", kLsciDrawControl,   SIG_EVERYWHERE, "o",              nullptr, nullptr },
+	{ "HiliteControl", kLsciHiliteControl, SIG_EVERYWHERE, "o",            nullptr, nullptr },
+	{ "EditControl", kLsciEditControl,   SIG_EVERYWHERE, "[o0]([o0])",     nullptr, nullptr },
+	{ "CanBeHere", kLsciCanBeHere,       SIG_EVERYWHERE, "o([r0])",        nullptr, nullptr },
+	{ "OnControl", kLsciOnControl,       SIG_EVERYWHERE, "i[oi](i)",       nullptr, nullptr },
 	{ "Block", kLsciBlock,               SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "ModuleDispose", kLsciModuleDispose, SIG_EVERYWHERE, "(i*)",         nullptr, nullptr },
+	{ "NumLoops", kLsciNumLoops,         SIG_EVERYWHERE, "i",              nullptr, nullptr },
+	{ "NumCels", kLsciNumCels,           SIG_EVERYWHERE, "ii",             nullptr, nullptr },
+	{ "BaseRectSet", kLsciBaseRectSet,   SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ "Memory", kLsciMemory,             SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "List", kLsciList,                 SIG_EVERYWHERE, "i(.*)",          kLsciList_subops, nullptr },
 	{ "Seq", kLsciSeq,                   SIG_EVERYWHERE, "i(.*)",          kLsciSeq_subops, nullptr },
 	{ "String", kString,                 SIG_EVERYWHERE, "i(.*)",          kLsciString_subops, nullptr },
 	{ "Long", kLsciLong,                 SIG_EVERYWHERE, "io(.*)",         nullptr, nullptr },
 	{ "SID", kLsciSid,                   SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
+	{ "Graph", kGraph,                   SIG_EVERYWHERE, "i(.*)",          kLsciGraph_subops, nullptr },
 	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          kTsn_subops, nullptr },
 #else
 	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },

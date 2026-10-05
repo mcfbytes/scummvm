@@ -44,6 +44,27 @@ reg_t kLsciStringGetToken(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciLong(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciSid(EngineState *s, int argc, reg_t *argv);
 
+reg_t kLsciSetCursor(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciAnimate(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciGraphSaveBits(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciGraphFillRect(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciGraphShowBits(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciGraphRedrawBox(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciTextSize(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciDisplay(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciCelRect(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciDrawCel(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciWindowNew(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSetPort(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciDrawControl(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciHiliteControl(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciEditControl(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciCanBeHere(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciOnControl(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciNumLoops(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciNumCels(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciBaseRectSet(EngineState *s, int argc, reg_t *argv);
+
 reg_t kLsciList(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciListNew(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciListDispose(EngineState *s, int argc, reg_t *argv);

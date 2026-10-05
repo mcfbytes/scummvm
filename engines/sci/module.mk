@@ -114,6 +114,7 @@ MODULE_OBJS += \
 	engine/hoyle5poker.o \
 	engine/kgraphics32.o \
 	engine/klsci.o \
+	engine/klsci_graphics.o \
 	engine/klsci_lists.o \
 	engine/ktsn.o \
 	engine/lsci_array.o \
