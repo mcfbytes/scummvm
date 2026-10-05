@@ -26,6 +26,7 @@
 #include "sci/engine/features.h"
 #include "sci/engine/state.h"
 #include "sci/engine/kernel.h"
+#include "sci/engine/lsci_script_image.h"
 #include "sci/engine/script.h"
 
 #include "common/util.h"
@@ -81,6 +82,19 @@ enum {
 	kSci11ExportTableOffset = 8
 };
 
+static SciSpan<const byte> makeLsciScriptImage(int scriptNr, const SciSpan<const byte> &resource, Common::Array<byte> &image) {
+	LsciContainer container;
+	LsciScriptImageWriter writer;
+	Common::String reason;
+	if (!parseLsciContainer(resource, container, reason) || !writer.write(container, image, reason))
+		error("Script %d is not a valid LSCI item container: %s", scriptNr, reason.c_str());
+
+	const Common::Array<LsciScriptImageWriter::StrayBranch> &strayBranches = writer.getStrayBranches();
+	for (uint i = 0; i < strayBranches.size(); ++i)
+		debugC(kDebugLevelScripts, "Script %d: branch at item %u offset %04x leaves its item", scriptNr, strayBranches[i].item, strayBranches[i].offset);
+	return SciSpan<const byte>(image.data(), image.size(), resource.name());
+}
+
 void Script::load(int script_nr, ResourceManager *resMan, ScriptPatcher *scriptPatcher, bool applyScriptPatches) {
 	freeScript();
 
@@ -88,12 +102,14 @@ void Script::load(int script_nr, ResourceManager *resMan, ScriptPatcher *scriptP
 	if (!script)
 		error("Script %d not found", script_nr);
 
-	// TODO: LSCI scripts are item containers with per-procedure code
+	// LSCI item containers are converted into SCI0 block images, which the code below loads
+	Common::Array<byte> lsciImage;
+	SciSpan<const byte> source = *script;
 	if (resMan->isLsci())
-		error("Script %d is an LSCI item container, which is not supported yet", script_nr);
+		source = makeLsciScriptImage(script_nr, source, lsciImage);
 
 	_nr = script_nr;
-	uint32 scriptSize = script->size();
+	uint32 scriptSize = source.size();
 	uint32 bufSize = scriptSize;
 	Resource *heap = nullptr;
 
@@ -139,7 +155,7 @@ void Script::load(int script_nr, ResourceManager *resMan, ScriptPatcher *scriptP
 	bufSize += extraLocalsWorkaround * 2;
 
 	SciSpan<byte> outBuffer = _buf->allocate(bufSize, script->name() + " buffer");
-	script->copyDataTo(outBuffer);
+	source.copyDataTo(outBuffer);
 	// The word-aligned script size is used here because other parts of the code
 	// currently rely on finding the start of the heap by reading the script size
 	_script = _buf->subspan(0, scriptSize, script->name());

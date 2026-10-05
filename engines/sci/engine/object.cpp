@@ -20,7 +20,9 @@
  */
 
 
+#include "sci/sci.h"
 #include "sci/engine/kernel.h"
+#include "sci/engine/lsci_container.h"
 #include "sci/engine/object.h"
 #include "sci/engine/script.h"
 #include "sci/engine/seg_manager.h"
@@ -239,6 +241,9 @@ int Object::propertyOffsetToId(SegManager *segMan, int propertyOffset) const {
 }
 
 uint16 Object::speciesVarIndex() {
+	// LSCI objects start with -env- and -size-, and -dict- takes the species' place
+	if (g_sci->getResMan()->isLsci())
+		return kLsciSlotDict;
 	return getSciVersion() < SCI_VERSION_1_1 ? 0 : 5;
 }
 

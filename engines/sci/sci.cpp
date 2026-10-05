@@ -559,6 +559,12 @@ bool SciEngine::initGame() {
 		return false;
 	}
 
+	// The LSCI game object is export 0 of script 0
+	if (_resMan->isLsci()) {
+		Script *script0 = _gamestate->_segMan->getScript(script0Segment);
+		_gameObjectAddress = make_reg32(script0Segment, script0->validateExportFunc(0, false));
+	}
+
 	// Reset parser
 	if (_vocabulary)
 		_vocabulary->reset();
