@@ -24,6 +24,7 @@
 
 #include "common/scummsys.h"
 #include "common/array.h"
+#include "common/hashmap.h"
 #include "common/serializer.h"
 #include "common/str-array.h"
 
@@ -108,6 +109,10 @@ struct EngineState : public Common::Serializable {
 	/* Non-VM information */
 
 	uint32 lastWaitTime; /**< The last time the game invoked Wait() */
+	uint32 _lsciLastPollTime; /**< LSCI: the tick at which a polling Wait() last found its period over */
+	uint16 _lsciPollPeriod; /**< LSCI: the period of polling Wait() calls, in ticks */
+	Common::HashMap<uint16, reg_t> _lsciSids; /**< LSCI: script objects by the host's object id (SID) */
+	uint16 _lsciSidSlots; /**< LSCI: the size of the SID table */
 	uint32 _screenUpdateTime;	/**< The last time the game updated the screen */
 
 	void speedThrottler(uint32 neededSleep);

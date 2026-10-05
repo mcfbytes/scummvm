@@ -130,6 +130,61 @@ static const char *const s_lsciDllKernelNamesAssumed[] = {
 };
 
 #ifdef ENABLE_SCI32
+static const SciKernelMapSubEntry kLsciArray_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(LsciArrayNew),          "ii",        nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(ArrayFree),             "[r0]",      nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(LsciArrayAt),           "[r0]i",     nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(LsciArrayAtPut),        "[r0]i(.*)", nullptr },
+	{ SIG_SCIALL,  4, MAP_CALL(ArrayGetSize),          "r",         nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(ArrayFill),             "riii",      nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(ArrayCopy),             "ri[r0]ii",  nullptr },
+	{ SIG_SCIALL,  7, MAP_CALL(LsciArrayCompare),      "[r0]i[r0]ii", nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
+static const SciKernelMapSubEntry kLsciList_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(LsciListNew),           "(i)",       nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(LsciListDispose),       "[r0]",      nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(LsciListCount),         "[r0]",      nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(LsciListAt),            "[r0]i",     nullptr },
+	{ SIG_SCIALL,  4, MAP_CALL(LsciListDelete),        "[r0].",     nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(LsciListContains),      "[r0].",     nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(LsciListAddToFront),    "[r0].",     nullptr },
+	{ SIG_SCIALL,  7, MAP_CALL(LsciListAddToEnd),      "[r0].",     nullptr },
+	{ SIG_SCIALL,  8, MAP_CALL(LsciListAddAfter),      "[r0]..",    nullptr },
+	{ SIG_SCIALL,  9, MAP_CALL(LsciListAddBefore),     "[r0]..",    nullptr },
+	{ SIG_SCIALL, 10, MAP_CALL(LsciListMoveToFront),   "[r0].",     nullptr },
+	{ SIG_SCIALL, 11, MAP_CALL(LsciListMoveToEnd),     "[r0].",     nullptr },
+	{ SIG_SCIALL, 12, MAP_CALL(LsciListIndexOf),       "[r0].",     nullptr },
+	{ SIG_SCIALL, 13, MAP_CALL(LsciListRelease),       "[r0]",      nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
+static const SciKernelMapSubEntry kLsciSeq_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(LsciSeqNew),            "[r0](i)",   nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(LsciSeqDispose),        "[r0]",      nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(LsciSeqBegin),          "r",         nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(LsciSeqEnd),            "r",         nullptr },
+	{ SIG_SCIALL,  4, MAP_CALL(LsciSeqNext),           "r",         nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(LsciSeqPrev),           "r",         nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(LsciSeqOver),           "r[r0]",     nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
+// Sub-ops 6, 9 and 10 are never called by the scripts
+static const SciKernelMapSubEntry kLsciString_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(StringLength),          "[r0]",      nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(StringFormat),          "[or0](.*)", nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(StringFormatAt),        "[r0][or0](.*)", nullptr },
+	{ SIG_SCIALL,  3, MAP_EMPTY(StringTerminate),      "[r0]",      nullptr },
+	{ SIG_SCIALL,  4, MAP_CALL(StringToInteger),       "[r0]",      nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(StringCompare),         "[r0][r0]",  nullptr },
+	{ SIG_SCIALL,  7, MAP_CALL(StringToUpperCase),     "[r0]",      nullptr },
+	{ SIG_SCIALL,  8, MAP_CALL(StringToLowerCase),     "[r0]",      nullptr },
+	{ SIG_SCIALL, 11, MAP_CALL(LsciStringGetToken),    "rr[r0]",    nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
 // The sub-op number is the TSN executive's export number; four exports are not for scripts
 static const SciKernelMapSubEntry kTsn_subops[] = {
 	{ SIG_SCIALL,  0, MAP_CALL(TsnGetStatus),          "",          nullptr },
@@ -157,6 +212,7 @@ static const SciKernelMapSubEntry kTsn_subops[] = {
 // kernels of another meaning. LSCI's own kernels need SCI32's arrays.
 static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_CALL(IsObject),                SIG_EVERYWHERE, ".",              nullptr, nullptr },
+	{ "ObjectFree", kDisposeClone,       SIG_EVERYWHERE, "o",              nullptr, nullptr },
 	{ "ObjectRespondsTo", kRespondsTo,   SIG_EVERYWHERE, ".i",             nullptr, nullptr },
 	{ "ModuleID", kScriptID,             SIG_EVERYWHERE, "[io](i)",        nullptr, nullptr },
 	{ MAP_CALL(GetFarText),              SIG_EVERYWHERE, "ii[r0]",         nullptr, nullptr },
@@ -182,8 +238,22 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ MAP_EMPTY(ShowFree),               SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
 	{ MAP_CALL(Joystick),                SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ MAP_CALL(ScummVMSleep),            SIG_EVERYWHERE, "i",              nullptr, nullptr },
+	{ MAP_EMPTY(SetSynonyms),            SIG_EVERYWHERE, "(.*)",           nullptr, nullptr },
 #ifdef ENABLE_SCI32
+	{ MAP_CALL(ObjectNew),               SIG_EVERYWHERE, "o(.*)",          nullptr, nullptr },
+	{ "Array", kArray,                   SIG_EVERYWHERE, "i(.*)",          kLsciArray_subops, nullptr },
+	{ "Resource", kLsciResource,         SIG_EVERYWHERE, "ii(i*)",         nullptr, nullptr },
 	{ "GetEvent", kLsciGetEvent,         SIG_EVERYWHERE, "io",             nullptr, nullptr },
+	{ "ConfigStr", kLsciConfigStr,       SIG_EVERYWHERE, "[ro]",           nullptr, nullptr },
+	{ "Wait", kLsciWait,                 SIG_EVERYWHERE, "i(i)",           nullptr, nullptr },
+	{ "Block", kLsciBlock,               SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
+	{ "ModuleDispose", kLsciModuleDispose, SIG_EVERYWHERE, "(i*)",         nullptr, nullptr },
+	{ "Memory", kLsciMemory,             SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
+	{ "List", kLsciList,                 SIG_EVERYWHERE, "i(.*)",          kLsciList_subops, nullptr },
+	{ "Seq", kLsciSeq,                   SIG_EVERYWHERE, "i(.*)",          kLsciSeq_subops, nullptr },
+	{ "String", kString,                 SIG_EVERYWHERE, "i(.*)",          kLsciString_subops, nullptr },
+	{ "Long", kLsciLong,                 SIG_EVERYWHERE, "io(.*)",         nullptr, nullptr },
+	{ "SID", kLsciSid,                   SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          kTsn_subops, nullptr },
 #else
 	{ MAP_CALL(GetEvent),                SIG_EVERYWHERE, "io",             nullptr, nullptr },

@@ -29,6 +29,46 @@ namespace Sci {
 struct EngineState;
 
 #ifdef ENABLE_SCI32
+reg_t kLsciResource(EngineState *s, int argc, reg_t *argv);
+reg_t kObjectNew(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciConfigStr(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciArrayNew(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciArrayAt(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciArrayAtPut(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciArrayCompare(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciWait(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciBlock(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciModuleDispose(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciMemory(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciStringGetToken(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciLong(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSid(EngineState *s, int argc, reg_t *argv);
+
+reg_t kLsciList(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListNew(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListDispose(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListCount(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListAt(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListDelete(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListContains(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListAddToFront(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListAddToEnd(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListAddAfter(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListAddBefore(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListMoveToFront(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListMoveToEnd(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListIndexOf(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciListRelease(EngineState *s, int argc, reg_t *argv);
+
+reg_t kLsciSeq(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqNew(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqDispose(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqBegin(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqEnd(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqNext(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqPrev(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciSeqOver(EngineState *s, int argc, reg_t *argv);
+
 reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv);
 
 reg_t kTsn(EngineState *s, int argc, reg_t *argv);

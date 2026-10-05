@@ -102,6 +102,10 @@ void EngineState::reset(bool isRestoring) {
 	r_rest = 0;
 
 	lastWaitTime = 0;
+	_lsciLastPollTime = 0;
+	_lsciPollPeriod = 0;
+	_lsciSids.clear();
+	_lsciSidSlots = 0;
 
 	gcCountDown = 0;
 
