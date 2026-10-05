@@ -1580,6 +1580,34 @@ static const struct ADGameDescription SciGameDescriptions[] = {
 #undef GUIO_HOYLE5
 #undef GUIO_HOYLE5_SAVELOAD
 
+// LSCI online clients: no savegames, the interpreter disables Save and Restore
+#define GUIO_LSCI GUIO2(GUIO_NOSPEECH, GUIO_NOLAUNCHLOAD)
+
+	// The ImagiNation Network 2.3 - English DOS (Feb 1994, floppy and CD)
+	// LSCI interpreter, Clubhouse; SierraLand and CasinoLand are in SL and LL
+	{"inn", "", {
+		{"resource.map", 0, "b98c22f9d6e4759362b223f5b046c758", 2034},
+		{"resource.001", 0, "cde6597f4ed82125c8eb12a7f18582d5", 1142883},
+		{"resource.002", 0, "174df4fa6035e68aef91d70247d61d6b", 356039},
+		AD_LISTEND},
+		Common::EN_ANY, Common::kPlatformDOS, ADGF_UNSTABLE, GUIO_LSCI },
+
+	// The ImagiNation Network - English DOS (Dec 1993, labelled 2.3.17)
+	{"inn", "Dec 1993", {
+		{"resource.map", 0, "803803ac7f5d28713225ef7140f1609c", 1902},
+		{"resource.001", 0, "13a17664349c37932102986acd19e0a3", 1211546},
+		AD_LISTEND},
+		Common::EN_ANY, Common::kPlatformDOS, ADGF_UNSTABLE, GUIO_LSCI },
+
+	// The Sierra Network 2.1 - English DOS (Mar 1993)
+	{"tsn", "", {
+		{"resource.map", 0, "8be9d51b3caf963d09bed3f117b9cb64", 1566},
+		{"resource.001", 0, "4bfa2280a50382a976099ba5485ae671", 860593},
+		AD_LISTEND},
+		Common::EN_ANY, Common::kPlatformDOS, ADGF_UNSTABLE, GUIO_LSCI },
+
+#undef GUIO_LSCI
+
 	// ImagiNation Network (INN) Demo
 	// SCI interpreter version 1.001.097
 	{"inndemo", "", {

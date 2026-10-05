@@ -57,6 +57,7 @@ const GameIdStrToEnum gameIdStrToEnum[] = {
 	{ "hoyle5school",    "",                GID_HOYLE5,           true,  SCI_VERSION_2_1_MIDDLE },
 	{ "hoyle5solitaire", "",                GID_HOYLE5,           true,  SCI_VERSION_2_1_MIDDLE },
 	{ "iceman",          "iceman",          GID_ICEMAN,           false, SCI_VERSION_NONE },
+	{ "inn",             "",                GID_INN,              false, SCI_VERSION_1_EARLY },
 	{ "inndemo",         "",                GID_INNDEMO,          false, SCI_VERSION_NONE },
 	{ "islandbrain",     "brain",           GID_ISLANDBRAIN,      false, SCI_VERSION_1_1 },
 	{ "jones",           "jones",           GID_JONES,            false, SCI_VERSION_1_1 },
@@ -108,6 +109,7 @@ const GameIdStrToEnum gameIdStrToEnum[] = {
 	{ "sq5",             "sq5",             GID_SQ5,              false, SCI_VERSION_NONE },
 	{ "sq6",             "sq6",             GID_SQ6,              true,  SCI_VERSION_NONE },
 	{ "torin",           "torin",           GID_TORIN,            true,  SCI_VERSION_NONE },
+	{ "tsn",             "",                GID_TSN,              false, SCI_VERSION_1_EARLY },
 	{ nullptr,           nullptr,           GID_ALL,              false, SCI_VERSION_NONE }
 };
 

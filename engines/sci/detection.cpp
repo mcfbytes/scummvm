@@ -112,6 +112,9 @@ static const PlainGameDescriptor s_sciGameTitles[] = {
 	{"pq3",             "Police Quest III: The Kindred"},
 	{"sq1sci",          "Space Quest I: Roger Wilco in the Sarien Encounter"},	// Note: There was also an AGI version of this called Space Quest: Chapter I - The Sarien Encounter
 	{"sq4",             "Space Quest IV: Roger Wilco and the Time Rippers"},	// floppy is SCI1, CD SCI1.1
+	// === LSCI games =========================================================
+	{"inn",             "The ImagiNation Network"},
+	{"tsn",             "The Sierra Network"},
 	// === SCI1.1 games =======================================================
 	{"christmas1992",   "Christmas Card 1992"},
 	{"ecoquest2",       "EcoQuest II: Lost Secret of the Rainforest"},
