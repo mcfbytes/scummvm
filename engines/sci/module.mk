@@ -40,6 +40,8 @@ MODULE_OBJS := \
 	engine/segment.o \
 	engine/state.o \
 	engine/static_selectors.o \
+	engine/tsn_envelope_parser.o \
+	engine/tsn_envelope_writer.o \
 	engine/tsn_offline_executive.o \
 	engine/tsn_session.o \
 	engine/tts.o \
