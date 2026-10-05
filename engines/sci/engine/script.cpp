@@ -1046,7 +1046,7 @@ void Script::initializeObjectsSci0(SegManager *segMan, SegmentId segmentId, bool
 		if (objType == SCI_OBJ_OBJECT || objType == SCI_OBJ_CLASS) {
 			uint16 objectPosition = seeker - *_buf + 12;
 			if (objType == SCI_OBJ_CLASS) {
-				uint16 species = seeker.getUint16SEAt(12);
+				uint16 species = seeker.getUint16SEAt(12 + Object::speciesVarIndex() * 2);
 				initializeClass(segMan, species, objectPosition);
 			}
 

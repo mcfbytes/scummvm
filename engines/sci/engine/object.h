@@ -70,7 +70,7 @@ class Object : public Common::Serializable {
 public:
 	Object() :
 		_name(NULL_REG),
-		_offset(getSciVersion() < SCI_VERSION_1_1 ? 0 : 5),
+		_offset(speciesVarIndex()),
 		_isFreed(false),
 		_methodCount(0),
 	    _pos(NULL_REG)
@@ -299,6 +299,9 @@ public:
 #endif
 
 	int propertyOffsetToId(SegManager *segMan, int propertyOffset) const;
+
+	// The variable holding -species-; -super-, -info- and name follow it
+	static uint16 speciesVarIndex();
 
 	void initSpecies(SegManager *segMan, reg_t addr, bool applyScriptPatches);
 	void initSuperClass(SegManager *segMan, reg_t addr, bool applyScriptPatches);

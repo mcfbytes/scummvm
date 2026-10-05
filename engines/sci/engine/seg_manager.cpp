@@ -1161,7 +1161,7 @@ void SegManager::uninstantiateScriptSci0(int script_nr) {
 
 		if ((objType == SCI_OBJ_OBJECT) || (objType == SCI_OBJ_CLASS)) { // object or class?
 			reg.incOffset(8);	// magic offset (SCRIPT_OBJECT_MAGIC_OFFSET)
-			int16 superclass = READ_SCI11ENDIAN_UINT16(scr->getBuf(reg.getOffset() + 2));
+			int16 superclass = READ_SCI11ENDIAN_UINT16(scr->getBuf(reg.getOffset() + (Object::speciesVarIndex() + 1) * 2));
 
 			if (superclass >= 0) {
 				int superclass_script = getClass(superclass).script;

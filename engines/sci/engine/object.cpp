@@ -238,6 +238,10 @@ int Object::propertyOffsetToId(SegManager *segMan, int propertyOffset) const {
 	}
 }
 
+uint16 Object::speciesVarIndex() {
+	return getSciVersion() < SCI_VERSION_1_1 ? 0 : 5;
+}
+
 void Object::initSpecies(SegManager *segMan, reg_t addr, bool applyScriptPatches) {
 	uint16 speciesOffset = getSpeciesSelector().getOffset();
 
