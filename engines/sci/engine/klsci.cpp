@@ -334,6 +334,26 @@ reg_t kLsciLong(EngineState *s, int argc, reg_t *argv) {
 	return object;
 }
 
+// LSCI numbers properties by slot from -env- on, as ScummVM's variables do
+reg_t kLsciObjPropOffset(EngineState *s, int argc, reg_t *argv) {
+	const Object *object = s->_segMan->getObject(argv[0]);
+	const int slot = object ? object->locateVarSelector(s->_segMan, argv[1].toUint16()) : -1;
+	if (slot < 0)
+		warning("kObjPropOffset: %04x:%04x has no property %d", PRINT_REG(argv[0]), argv[1].toUint16());
+	return make_reg(0, slot);
+}
+
+reg_t kLsciObjOffsetProp(EngineState *s, int argc, reg_t *argv) {
+	const Object *object = s->_segMan->getObject(argv[0]);
+	const Object *layout = object ? object->getClass(s->_segMan) : nullptr;
+	const uint slot = argv[1].toUint16();
+	if (!layout || slot >= layout->getVarCount()) {
+		warning("kObjOffsetProp: %04x:%04x has no slot %d", PRINT_REG(argv[0]), slot);
+		return NULL_REG;
+	}
+	return make_reg(0, layout->getVarSelector(slot));
+}
+
 reg_t kLsciIsObject(EngineState *s, int argc, reg_t *argv) {
 	reg_t object = resolveLsciHandle(s, argv[0]);
 	return kIsObject(s, 1, &object);

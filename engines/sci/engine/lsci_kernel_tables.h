@@ -292,6 +292,8 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ "FileSystem", kFileIO,             SIG_EVERYWHERE, "i(.*)",          kLsciFileSystem_subops, nullptr },
 	{ "String", kString,                 SIG_EVERYWHERE, "i(.*)",          kLsciString_subops, nullptr },
 	{ "Long", kLsciLong,                 SIG_EVERYWHERE, "io(.*)",         nullptr, nullptr },
+	{ "ObjPropOffset", kLsciObjPropOffset, SIG_EVERYWHERE, "oi",           nullptr, nullptr },
+	{ "ObjOffsetProp", kLsciObjOffsetProp, SIG_EVERYWHERE, "oi",           nullptr, nullptr },
 	{ "SID", kLsciSid,                   SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "Graph", kGraph,                   SIG_EVERYWHERE, "i(.*)",          kLsciGraph_subops, nullptr },
 	{ "TSN", kTsn,                       SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
