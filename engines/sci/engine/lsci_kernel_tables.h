@@ -185,6 +185,25 @@ static const SciKernelMapSubEntry kLsciString_subops[] = {
 	SCI_SUBOPENTRY_TERMINATOR
 };
 
+// Sub-ops 9 and 11 to 17 accept the File object for its handle
+static const SciKernelMapSubEntry kLsciFileSystem_subops[] = {
+	{ SIG_SCIALL,  0, MAP_CALL(LsciFileOpen),          "[ro]i",     nullptr },
+	{ SIG_SCIALL,  1, MAP_CALL(FileIOClose),           "i",         nullptr },
+	{ SIG_SCIALL,  2, MAP_CALL(LsciFileWriteString),   "i[ro]",     nullptr },
+	{ SIG_SCIALL,  3, MAP_CALL(LsciFileReadString),    "[ro]ii",    nullptr },
+	{ SIG_SCIALL,  5, MAP_CALL(FileIOWriteByte),       "ii",        nullptr },
+	{ SIG_SCIALL,  6, MAP_CALL(LsciFileGetByte),       "i",         nullptr },
+	{ SIG_SCIALL,  7, MAP_EMPTY(FileReserved),         "(.*)",      nullptr },
+	{ SIG_SCIALL,  9, MAP_CALL(LsciFileSeek),          "[io]ii(i)", nullptr },
+	{ SIG_SCIALL, 10, MAP_CALL(FileIOUnlink),          "r",         nullptr },
+	{ SIG_SCIALL, 11, MAP_CALL(LsciFileReadToArray),   "[io]ri",    nullptr },
+	{ SIG_SCIALL, 12, MAP_CALL(LsciFileWriteFromArray), "[io]ri",   nullptr },
+	{ SIG_SCIALL, 13, MAP_CALL(LsciFileSize),          "[io]",      nullptr },
+	{ SIG_SCIALL, 16, MAP_CALL(LsciFileSize),          "[io]",      nullptr },
+	{ SIG_SCIALL, 17, MAP_CALL(LsciFileSizeHigh),      "[io]",      nullptr },
+	SCI_SUBOPENTRY_TERMINATOR
+};
+
 // Rects come as Rect objects; lines take y before x as in SCI
 static const SciKernelMapSubEntry kLsciGraph_subops[] = {
 	{ SIG_SCIALL,  1, MAP_CALL(GraphGetColorCount),    "",          nullptr },
@@ -290,6 +309,7 @@ static const SciKernelMapEntry s_lsciKernelMap[] = {
 	{ "Memory", kLsciMemory,             SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },
 	{ "List", kLsciList,                 SIG_EVERYWHERE, "i(.*)",          kLsciList_subops, nullptr },
 	{ "Seq", kLsciSeq,                   SIG_EVERYWHERE, "i(.*)",          kLsciSeq_subops, nullptr },
+	{ "FileSystem", kFileIO,             SIG_EVERYWHERE, "i(.*)",          kLsciFileSystem_subops, nullptr },
 	{ "String", kString,                 SIG_EVERYWHERE, "i(.*)",          kLsciString_subops, nullptr },
 	{ "Long", kLsciLong,                 SIG_EVERYWHERE, "io(.*)",         nullptr, nullptr },
 	{ "SID", kLsciSid,                   SIG_EVERYWHERE, "i(.*)",          nullptr, nullptr },

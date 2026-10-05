@@ -168,6 +168,8 @@ reg_t file_open(EngineState *s, const Common::String &filename, kFileOpenMode mo
 		break;
 #endif
 	default:
+		// LSCI's files are shared with the DOS original, so they stay as they are
+		isCompressed = !g_sci->getResMan()->isLsci();
 		break;
 	}
 
@@ -181,7 +183,8 @@ reg_t file_open(EngineState *s, const Common::String &filename, kFileOpenMode mo
 		isRewritableFile = (filename == "swat.dat");
 		break;
 	default:
-		isRewritableFile = false;
+		// LSCI opens every file for reading and writing
+		isRewritableFile = g_sci->getResMan()->isLsci();
 	}
 
 	if (isRewritableFile) {

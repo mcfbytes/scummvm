@@ -90,6 +90,16 @@ reg_t kLsciSeqNext(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciSeqPrev(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciSeqOver(EngineState *s, int argc, reg_t *argv);
 
+reg_t kLsciFileOpen(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileWriteString(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileReadString(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileGetByte(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileSeek(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileReadToArray(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileWriteFromArray(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileSize(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileSizeHigh(EngineState *s, int argc, reg_t *argv);
+
 reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv);
 
 reg_t kTsn(EngineState *s, int argc, reg_t *argv);
