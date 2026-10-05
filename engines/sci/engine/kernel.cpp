@@ -956,6 +956,12 @@ void script_adjust_opcode_formats() {
 		g_sci->_opcode_formats[op_lofss][0] = Script_Offset;
 	}
 
+	// LSCI reads the export index of calle and the operand of &rest as one byte in both forms
+	if (g_sci->getResMan()->isLsci()) {
+		g_sci->_opcode_formats[op_calle][1] = Script_Byte;
+		g_sci->_opcode_formats[op_rest][0] = Script_Byte;
+	}
+
 #ifdef ENABLE_SCI32
 	// In SCI32, some arguments are now words instead of bytes
 	if (getSciVersion() >= SCI_VERSION_2) {

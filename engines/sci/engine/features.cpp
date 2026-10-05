@@ -156,6 +156,9 @@ SciVersion GameFeatures::detectDoSoundType() {
 		} else if (getSciVersion() >= SCI_VERSION_2) {
 			_doSoundType = SCI_VERSION_2;
 #endif
+		} else if (g_sci->getResMan()->isLsci()) {
+			// LSCI has no Sound object to scan; its sound resources are SCI1 ones
+			_doSoundType = SCI_VERSION_1_EARLY;
 		} else if (SELECTOR(nodePtr) == -1) {
 			// No nodePtr selector, so this game is definitely using newer
 			// SCI0 sound code (i.e. SCI_VERSION_0_LATE)
@@ -282,6 +285,12 @@ bool GameFeatures::autoDetectLofsType(const Common::String &gameSuperClassName, 
 
 SciVersion GameFeatures::detectLofsType() {
 	if (_lofsType == SCI_VERSION_NONE) {
+		// LSCI scripts become images with absolute lofs offsets and wide exports
+		if (g_sci->getResMan()->isLsci()) {
+			_lofsType = SCI_VERSION_1_MIDDLE;
+			return _lofsType;
+		}
+
 		// This detection only works (and is only needed) for SCI 1
 		if (getSciVersion() <= SCI_VERSION_01) {
 			_lofsType = SCI_VERSION_0_EARLY;
@@ -702,6 +711,9 @@ MoveCountType GameFeatures::detectMoveCountType() {
 		// SCI0/SCI01 games always increment move count
 		if (getSciVersion() <= SCI_VERSION_01) {
 			_moveCountType = kIncrementMoveCount;
+		} else if (g_sci->getResMan()->isLsci()) {
+			// LSCI has no DoBresen kernel, which is the only user of the move count
+			_moveCountType = kIgnoreMoveCount;
 		} else if (getSciVersion() >= SCI_VERSION_1_1) {
 			// SCI1.1 and newer games always ignore move count
 			_moveCountType = kIgnoreMoveCount;
