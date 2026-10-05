@@ -202,6 +202,17 @@ ResourceType ResourceManager::convertResType(byte type) {
 	return kResourceTypeInvalid;
 }
 
+ResourceId ResourceManager::convertSci0ResId(uint16 key) {
+	const byte type = key >> 11;
+	const uint16 number = key & 0x7FF;
+
+	// Scripts load LSCI modules by script number, which forms this same key
+	if (type == kLsciModuleType)
+		return ResourceId(kResourceTypeScript, kLsciModuleScriptBase | number);
+
+	return ResourceId(convertResType(type), number);
+}
+
 //-- Resource main functions --
 Resource::Resource(ResourceManager *resMan, ResourceId id) : SciSpan<const byte>(nullptr, 0, id.toString()), _resMan(resMan), _id(id) {
 	_fileOffset = 0;
@@ -1890,15 +1901,7 @@ int ResourceManager::readResourceMapSCI0(ResourceSource *map) {
 		if (offset == 0xFFFFFFFF)
 			break;
 
-		uint16 number;
-		if (_mapVersion == kResVersionKQ5FMT) {
-			number = id;
-		} else {
-			type = convertResType(id >> 11);
-			number = id & 0x7FF;
-		}
-
-		ResourceId resId = ResourceId(type, number);
+		const ResourceId resId = (_mapVersion == kResVersionKQ5FMT) ? ResourceId(type, id) : convertSci0ResId(id);
 		// adding a new resource
 		if (_resMap.contains(resId) == false) {
 			ResourceSource *source = findVolume(map, offset >> bShift);
@@ -2269,7 +2272,7 @@ int Resource::readResourceInfo(ResVersion volVersion, Common::SeekableReadStream
 	// SCI1 volume format:  {bResType wResNumber wPacked+4 wUnpacked wCompression} = 9 bytes
 	// SCI1.1 volume format:  {bResType wResNumber wPacked wUnpacked wCompression} = 9 bytes
 	// SCI32 volume format :  {bResType wResNumber dwPacked dwUnpacked wCompression} = 13 bytes
-	uint16 w, number;
+	uint16 number;
 	uint32 wCompression, szUnpacked;
 	ResourceType type;
 
@@ -2278,14 +2281,15 @@ int Resource::readResourceInfo(ResVersion volVersion, Common::SeekableReadStream
 
 	switch (volVersion) {
 	case kResVersionSci0Sci1Early:
-	case kResVersionSci1Middle:
-		w = file->readUint16LE();
-		type = _resMan->convertResType(w >> 11);
-		number = w & 0x7FF;
+	case kResVersionSci1Middle: {
+		const ResourceId id = _resMan->convertSci0ResId(file->readUint16LE());
+		type = id.getType();
+		number = id.getNumber();
 		szPacked = file->readUint16LE() - 4;
 		szUnpacked = file->readUint16LE();
 		wCompression = file->readUint16LE();
 		break;
+	}
 	case kResVersionSci1Late:
 		type = _resMan->convertResType(file->readByte());
 		number = file->readUint16LE();

@@ -81,6 +81,8 @@ enum {
 
 // LSCI (The Sierra Network's SCI variant) resource facts
 enum {
+	kLsciModuleType = 31,           ///< map type of the class library modules
+	kLsciModuleScriptBase = 0xE800, ///< scripts refer to module n as script 0xE800 + n
 	kLsciCompressionDcl = 8         ///< LSCI's compression number for PKWARE DCL
 };
 
@@ -491,6 +493,9 @@ public:
 	 * @return The ResourceType
 	 */
 	ResourceType convertResType(byte type);
+
+	// Converts an SCI0 map or volume key (type << 11 | number) to our id
+	ResourceId convertSci0ResId(uint16 key);
 
 protected:
 	bool _detectionMode;
