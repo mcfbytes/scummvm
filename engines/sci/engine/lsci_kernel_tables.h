@@ -194,6 +194,7 @@ static const SciKernelMapSubEntry kLsciFileSystem_subops[] = {
 	{ SIG_SCIALL,  5, MAP_CALL(FileIOWriteByte),       "ii",        nullptr },
 	{ SIG_SCIALL,  6, MAP_CALL(LsciFileGetByte),       "i",         nullptr },
 	{ SIG_SCIALL,  7, MAP_EMPTY(FileReserved),         "(.*)",      nullptr },
+	{ SIG_SCIALL,  8, MAP_CALL(LsciFileIsDirectory),   "[ro]",      nullptr },
 	{ SIG_SCIALL,  9, MAP_CALL(LsciFileSeek),          "[io]ii(i)", nullptr },
 	{ SIG_SCIALL, 10, MAP_CALL(FileIOUnlink),          "r",         nullptr },
 	{ SIG_SCIALL, 11, MAP_CALL(LsciFileReadToArray),   "[io]ri",    nullptr },

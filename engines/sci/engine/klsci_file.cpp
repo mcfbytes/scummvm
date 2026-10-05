@@ -19,6 +19,9 @@
  *
  */
 
+#include "common/config-manager.h"
+#include "common/fs.h"
+
 #include "sci/sci.h"
 #include "sci/engine/file.h"
 #include "sci/engine/kernel.h"
@@ -28,6 +31,10 @@
 #include "sci/engine/state.h"
 
 namespace Sci {
+
+enum {
+	kLsciDirectoryDepth = 4
+};
 
 // LSCI's FileSystem kernel on ScummVM's script files: the File class passes
 // handles, except to the sub-ops that take the File object itself.
@@ -107,6 +114,17 @@ reg_t kLsciFileSize(EngineState *s, int argc, reg_t *argv) {
 reg_t kLsciFileSizeHigh(EngineState *s, int argc, reg_t *argv) {
 	FileHandle *file = getLsciFile(s, argv[0]);
 	return make_reg(0, file && file->_in ? file->_in->size() >> 16 : 0);
+}
+
+// A DOS path relative to the game directory, the working directory of LSCITV
+reg_t kLsciFileIsDirectory(EngineState *s, int argc, reg_t *argv) {
+	const Common::Path path = Common::Path(getLsciString(s->_segMan, argv[0]), '\\').normalize();
+	if (path.empty())
+		return TRUE_REG;
+
+	Common::FSDirectory gameDirectory(ConfMan.getPath("path"), kLsciDirectoryDepth);
+	Common::ScopedPtr<Common::FSDirectory> directory(gameDirectory.getSubDirectory(path));
+	return make_reg(0, directory.get() != nullptr);
 }
 
 } // End of namespace Sci

@@ -99,6 +99,7 @@ reg_t kLsciFileReadToArray(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciFileWriteFromArray(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciFileSize(EngineState *s, int argc, reg_t *argv);
 reg_t kLsciFileSizeHigh(EngineState *s, int argc, reg_t *argv);
+reg_t kLsciFileIsDirectory(EngineState *s, int argc, reg_t *argv);
 
 reg_t kLsciGetEvent(EngineState *s, int argc, reg_t *argv);
 
