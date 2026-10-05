@@ -92,7 +92,10 @@ static Common::Array<byte> formatTsnMessage(SegManager *segMan, const Common::St
 		case 'a': {
 			const reg_t array = next < argc ? argv[next++] : NULL_REG;
 			const uint byteCount = value.toUint16() * getLsciElementSize(segMan, array);
-			body.push_back(getLsciArrayBytes(segMan, array, byteCount));
+			Common::Array<byte> bytes = getLsciArrayBytes(segMan, array, byteCount);
+			// LSCITV copies the count whatever the array's size; the stock Login has 0 past the end
+			bytes.resize(byteCount);
+			body.push_back(bytes);
 			break;
 		}
 		default:
