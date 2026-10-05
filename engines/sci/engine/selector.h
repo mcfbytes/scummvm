@@ -150,6 +150,8 @@ struct SelectorCache {
 
 	Selector plane;
 	Selector top, left, bottom, right;
+	Selector lastSeen, baseRect; // LSCI views: Rect objects for the last-seen and base rects
+	Selector frameRect, color; // LSCI windows and controls
 	Selector resX, resY;
 
 	Selector fore;

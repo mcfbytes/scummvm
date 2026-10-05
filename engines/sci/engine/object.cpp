@@ -173,7 +173,12 @@ void Object::init(const Script &owner, reg_t obj_pos, bool initVariables) {
 }
 
 const Object *Object::getClass(SegManager *segMan) const {
-	return isClass() ? this : segMan->getObject(getSuperClassSelector());
+	if (isClass())
+		return this;
+	// An LSCI object may inherit from an instance; its -dict- names the class with its layout
+	if (g_sci->getResMan()->isLsci())
+		return segMan->getObject(getSpeciesSelector());
+	return segMan->getObject(getSuperClassSelector());
 }
 
 int Object::locateVarSelector(SegManager *segMan, Selector slc) const {

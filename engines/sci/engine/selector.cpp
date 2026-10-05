@@ -241,6 +241,18 @@ void Kernel::mapSelectors() {
 	FIND_SELECTOR(masterVolume);
 	FIND_SELECTOR(setCel);
 	FIND_SELECTOR(value);
+	FIND_SELECTOR(lastSeen);
+	FIND_SELECTOR(baseRect);
+	FIND_SELECTOR(frameRect);
+	FIND_SELECTOR(color);
+
+	// LSCI views keep their now-seen rect in their own Rect properties
+	if (_resMan->isLsci()) {
+		_selectorCache.nsTop = _selectorCache.top;
+		_selectorCache.nsLeft = _selectorCache.left;
+		_selectorCache.nsBottom = _selectorCache.bottom;
+		_selectorCache.nsRight = _selectorCache.right;
+	}
 #endif
 }
 

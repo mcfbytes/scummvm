@@ -120,6 +120,8 @@ private:
 	void adjustInvalidCels(GfxView *view, AnimateList::iterator it);
 	void processViewScaling(GfxView *view, AnimateList::iterator it);
 	void setNsRect(GfxView *view, AnimateList::iterator it);
+	Common::Rect getLastSeenRect(reg_t object);
+	void setLastSeenRect(reg_t object, const Common::Rect &rect);
 
 	EngineState *_s;
 	ScriptPatcher *_scriptPatcher;

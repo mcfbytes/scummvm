@@ -492,10 +492,7 @@ void GfxAnimate::updateScreen(byte oldPicNotValid) {
 	for (it = _list.begin(); it != end; ++it) {
 		if (it->showBitsFlag || !(it->signal & (kSignalRemoveView | kSignalNoUpdate) ||
 										(!(it->signal & kSignalRemoveView) && (it->signal & kSignalNoUpdate) && oldPicNotValid))) {
-			lsRect.left = readSelectorValue(_s->_segMan, it->object, SELECTOR(lsLeft));
-			lsRect.top = readSelectorValue(_s->_segMan, it->object, SELECTOR(lsTop));
-			lsRect.right = readSelectorValue(_s->_segMan, it->object, SELECTOR(lsRight));
-			lsRect.bottom = readSelectorValue(_s->_segMan, it->object, SELECTOR(lsBottom));
+			lsRect = getLastSeenRect(it->object);
 
 			workerRect = lsRect;
 			workerRect.clip(it->celRect);
@@ -507,10 +504,7 @@ void GfxAnimate::updateScreen(byte oldPicNotValid) {
 				_paint16->bitsShow(lsRect);
 				workerRect = it->celRect;
 			}
-			writeSelectorValue(_s->_segMan, it->object, SELECTOR(lsLeft), it->celRect.left);
-			writeSelectorValue(_s->_segMan, it->object, SELECTOR(lsTop), it->celRect.top);
-			writeSelectorValue(_s->_segMan, it->object, SELECTOR(lsRight), it->celRect.right);
-			writeSelectorValue(_s->_segMan, it->object, SELECTOR(lsBottom), it->celRect.bottom);
+			setLastSeenRect(it->object, it->celRect);
 			// may get used for debugging
 			//_paint16->frameRect(workerRect);
 			_paint16->bitsShow(workerRect);
@@ -521,6 +515,37 @@ void GfxAnimate::updateScreen(byte oldPicNotValid) {
 	}
 	// use this for debug purposes
 	// _screen->copyToScreen();
+}
+
+Common::Rect GfxAnimate::getLastSeenRect(reg_t object) {
+#ifdef ENABLE_SCI32
+	// LSCI keeps the last-seen rect in a Rect object, whose sides are the nsRect selectors
+	if (g_sci->getResMan()->isLsci()) {
+		const reg_t rect = readSelector(_s->_segMan, object, SELECTOR(lastSeen));
+		return rect.isNull() ? Common::Rect() : _compare->getNSRect(rect);
+	}
+#endif
+	Common::Rect lsRect;
+	lsRect.left = readSelectorValue(_s->_segMan, object, SELECTOR(lsLeft));
+	lsRect.top = readSelectorValue(_s->_segMan, object, SELECTOR(lsTop));
+	lsRect.right = readSelectorValue(_s->_segMan, object, SELECTOR(lsRight));
+	lsRect.bottom = readSelectorValue(_s->_segMan, object, SELECTOR(lsBottom));
+	return lsRect;
+}
+
+void GfxAnimate::setLastSeenRect(reg_t object, const Common::Rect &rect) {
+#ifdef ENABLE_SCI32
+	if (g_sci->getResMan()->isLsci()) {
+		const reg_t lastSeen = readSelector(_s->_segMan, object, SELECTOR(lastSeen));
+		if (!lastSeen.isNull())
+			_compare->setNSRect(lastSeen, rect);
+		return;
+	}
+#endif
+	writeSelectorValue(_s->_segMan, object, SELECTOR(lsLeft), rect.left);
+	writeSelectorValue(_s->_segMan, object, SELECTOR(lsTop), rect.top);
+	writeSelectorValue(_s->_segMan, object, SELECTOR(lsRight), rect.right);
+	writeSelectorValue(_s->_segMan, object, SELECTOR(lsBottom), rect.bottom);
 }
 
 void GfxAnimate::restoreAndDelete(int argc, reg_t *argv) {
