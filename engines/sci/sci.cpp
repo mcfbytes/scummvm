@@ -43,6 +43,8 @@
 #include "sci/engine/selector.h"	// for SELECTOR
 #include "sci/engine/scriptdebug.h"
 #include "sci/engine/tts.h"
+#include "sci/engine/tsn_offline_executive.h"
+#include "sci/engine/tsn_session.h"
 #include "sci/resource/lsci_land.h"
 
 #include "sci/sound/audio.h"
@@ -133,6 +135,7 @@ SciEngine::SciEngine(OSystem *syst, const ADGameDescription *desc, SciGameId gam
 	_vocabulary(nullptr),
 	_vocabularyLanguage(1), // we load english vocabulary on startup
 	_eventMan(nullptr),
+	_tsnSession(nullptr),
 	_gameObjectAddress(),
 	_console(nullptr),
 	_tts(nullptr),
@@ -261,6 +264,7 @@ SciEngine::~SciEngine() {
 	delete _gfxMacIconBar;
 
 	delete _eventMan;
+	delete _tsnSession;
 	delete _gamestate->_segMan;
 	delete _gamestate;
 
@@ -347,6 +351,8 @@ Common::Error SciEngine::run() {
 	_gamestate = new EngineState(segMan);
 	_guestAdditions = new GuestAdditions(_gamestate, _features, _kernel);
 	_eventMan = new EventManager(_resMan->detectFontExtended());
+	if (_resMan->isLsci())
+		_tsnSession = new TsnSession(new OfflineTsnExecutive());
 #ifdef ENABLE_SCI32
 	if (getSciVersion() >= SCI_VERSION_2) {
 		_audio32 = new Audio32(_resMan);

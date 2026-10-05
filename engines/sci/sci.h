@@ -80,6 +80,7 @@ class GfxText16;
 class GfxText32;
 class GfxTransitions;
 class SciTTS;
+class TsnSession;
 
 #ifdef ENABLE_SCI32
 class GfxFrameout;
@@ -117,6 +118,7 @@ enum kDebugLevels {
 	kDebugLevelWorkarounds,
 	kDebugLevelVideo,
 	kDebugLevelGame,
+	kDebugLevelNetwork,
 };
 
 
@@ -225,6 +227,7 @@ public:
 	inline EngineState *getEngineState() const { return _gamestate; }
 	inline Vocabulary *getVocabulary() const { return _vocabulary; }
 	inline EventManager *getEventManager() const { return _eventMan; }
+	inline TsnSession *getTsnSession() const { return _tsnSession; }
 	inline reg_t getGameObject() const { return _gameObjectAddress; } // Gets the game object VM address
 
 	Common::RandomSource &getRNG() { return _rng; }
@@ -413,6 +416,7 @@ private:
 	Vocabulary *_vocabulary;
 	int16 _vocabularyLanguage;
 	EventManager *_eventMan;
+	TsnSession *_tsnSession; ///< LSCI only: the link to the TSN executive
 	reg_t _gameObjectAddress; /**< Pointer to the game object */
 	Console *_console;
 	Common::RandomSource _rng;
